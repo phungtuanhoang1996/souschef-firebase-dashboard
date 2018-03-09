@@ -1,0 +1,7 @@
+.wrapper {
+    display: flex;
+}
+
+.LoginComponent {
+    width: 50%;
+}
