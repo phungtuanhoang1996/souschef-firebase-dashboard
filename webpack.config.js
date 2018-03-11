@@ -11,6 +11,7 @@ var config = {
         hot: true,
         inline: true,
         port: 8080,
+        historyApiFallback: true
     },
     module: {
         rules: [
@@ -29,7 +30,9 @@ var config = {
         ],
 
     },
-    
+    resolve: {
+        extensions: [ '.js', '.jsx'],
+    }
 }
 
 module.exports = config;
