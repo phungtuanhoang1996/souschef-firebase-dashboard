@@ -1,0 +1,10 @@
+.logincomponent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 0.5em;
+}
+
+.login-button {
+    align-items: right;
+}

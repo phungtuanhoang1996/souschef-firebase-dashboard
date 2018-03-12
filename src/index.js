@@ -1,15 +1,22 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Button } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.css';
 import Home from './containers/Home';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import store, { history } from './store';
+import App, {NavBar} from './App';
+import Dashboard from './containers/Dashboard';
+import NavBarComponent from './components/NavBarComponent';
 
 ReactDOM.render( 
     <Provider store={store}>
         <Router>
-            <Route path="/" component={Home}/>
+            <div>
+                <NavBar/>
+                <Route path="/" exact component={App} />
+                <Route path="/dashboard" component={Dashboard} />
+            </div>
         </Router>
     </Provider>
 , document.getElementById('root'));
