@@ -14,7 +14,6 @@ export default class Home extends React.Component {
 
     handleLogin = (email, password) => {
         firebase.auth().signInWithEmailAndPassword(email, password).then(result => {
-            console.log('all',this.props);
             this.props.login();
         }).catch(error => {
             var errorCode = error.code;
@@ -42,7 +41,6 @@ export default class Home extends React.Component {
                 <Button color="secondary" onClick={this.toggleErrorPopup}>Close</Button>
             </ModalFooter>
         </Modal>;
-
         return (
             <div>
                 <div className="logincomponent">
