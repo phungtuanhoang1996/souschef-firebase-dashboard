@@ -5,7 +5,7 @@ import Home from './containers/Home';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import store, { history } from './store';
-import App, {NavBar} from './App';
+import App, {NavBar, DashboardPage} from './App';
 import Dashboard from './containers/Dashboard';
 import NavBarComponent from './components/NavBarComponent';
 
@@ -15,7 +15,7 @@ ReactDOM.render(
             <div>
                 <NavBar/>
                 <Route path="/" exact component={App} />
-                <Route path="/dashboard" component={Dashboard} />
+                <Route path="/dashboard" component={DashboardPage} />
             </div>
         </Router>
     </Provider>

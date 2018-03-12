@@ -4,6 +4,7 @@ import { firebaseConnect, isLoaded, isEmpty } from 'react-redux-firebase'
 import * as actionCreators from './actions/actionCreators';
 import Home from './containers/Home';
 import NavBarComponent from './components/NavBarComponent';
+import Dashboard from './containers/Dashboard';
 
 // function mapStateToProps (state) {
 //     return {
@@ -38,4 +39,5 @@ const App = compose(
   )
 
 export const NavBar = App(NavBarComponent);
+export const DashboardPage = App(Dashboard);
 export default App(Home);
