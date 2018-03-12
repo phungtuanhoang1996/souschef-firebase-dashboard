@@ -2,8 +2,6 @@ import React from 'react';
 import  LoginComponent  from '../components/LoginComponent';
 import {Button, Col, Modal, ModalBody, ModalFooter, ModalHeader} from 'reactstrap';
 import "./Home.css";
-import firebase, {MachinesRef, BrandsRef} from '../firebase';
-import {FireabaseDatabase} from '../firebase';
 import NavBarComponent from '../components/NavBarComponent';
 import Dasboard from './Dashboard';
 
@@ -13,8 +11,9 @@ export default class Home extends React.Component {
     };
 
     handleLogin = (email, password) => {
-        firebase.auth().signInWithEmailAndPassword(email, password).then(result => {
+        this.props.firebase.auth().signInWithEmailAndPassword(email, password).then(result => {
             this.props.login();
+            this.props.history.push('/dashboard');
         }).catch(error => {
             var errorCode = error.code;
             var errorMessage = error.message;
@@ -44,13 +43,9 @@ export default class Home extends React.Component {
         return (
             <div>
                 <div className="logincomponent">
-                    {
-                        this.props.isLoggedIn ?
-                            <Dasboard/> :
-                            <Col sm={4}>
-                                <LoginComponent handleLogin={this.handleLogin} />
-                            </Col>
-                    }
+                    <Col sm={4}>
+                        <LoginComponent handleLogin={this.handleLogin} />
+                    </Col>
                 </div>
                 {errorModal}
             </div>
