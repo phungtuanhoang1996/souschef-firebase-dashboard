@@ -1,5 +1,10 @@
 function machines(state=[],action){
-    return state;
+    console.log("machines", state, action.data);
+    if (action.data != null) {
+        return action.data;
+    } else {
+        return state;
+    }
 }
 
 export default machines;
