@@ -14,8 +14,9 @@ export default class Home extends React.Component {
 
     handleLogin = (username, password) => {
         if (!this.validateEmail(username)) {
-            if (this.validateFirebaseUser(username, password)) {
-                this.props.login();
+            const currentUserObject = this.validateFirebaseUser(username, password);
+            if (currentUserObject != false) {
+                this.props.login(username, currentUserObject.brand, this.props.brands[currentUserObject.brand].name);
                 this.props.history.push('/dashboard');
             } else {
                 this.setState({
@@ -53,7 +54,7 @@ export default class Home extends React.Component {
     validateFirebaseUser = (username, password) => {
         for (var user in this.props.users){
             if (user === username && bcrypt.compareSync(password, this.props.users[user].hash)){
-                return true;
+                return this.props.users[user];
             }
         }
         return false;
