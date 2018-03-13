@@ -1,5 +1,5 @@
 import React from 'react';
-import firebase, { BrandsRef, MachinesRef }  from '../firebase';
+import firebase  from '../firebase';
 
 export default class Dashboard extends React.Component {
     render() {
