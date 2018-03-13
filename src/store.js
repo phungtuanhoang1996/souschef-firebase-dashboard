@@ -2,7 +2,7 @@ import { createStore, compose } from 'redux';
 import { syncHistoryWithStore } from 'react-router-redux';
 import { createBrowserHistory } from 'history';
 import rootReducer from './reducers/index';
-import firebase, { MachinesRef, BrandsRef } from './firebase';
+import firebase from './firebase';
 import { reactReduxFirebase } from 'react-redux-firebase';
 
 const defaultState = {
@@ -14,6 +14,7 @@ const defaultState = {
 const config = {
     machines: 'machines', // firebase root where user profiles are stored
     brands: 'brands',
+    users: 'users',
     enableLogging: false, // enable/disable Firebase's database logging
   }
 

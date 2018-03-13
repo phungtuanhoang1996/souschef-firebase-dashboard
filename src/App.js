@@ -24,13 +24,15 @@ const App = compose(
     firebaseConnect((props) => {
       return [
         'machines',
-        'brands'
+        'brands',
+        'users'
       ]
     }),
     connect(
       (state) => ({
         machines: state.firebase.data.machines,
         brands: state.firebase.data.brands,
+        users: state.firebase.data.users,
         isLoggedIn: state.isLoggedIn,
         authToken: state.authToken,
       }),
