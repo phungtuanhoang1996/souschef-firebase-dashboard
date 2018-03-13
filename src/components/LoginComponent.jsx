@@ -26,8 +26,8 @@ export default class LoginComponent extends React.Component {
                     <CardBody>
                         <Form>
                             <FormGroup>
-                                <Label for="emailInput">Email</Label>
-                                    <Input id="emailInput" type="email" name="email" placeholder="Enter email" onChange={this.emailHandler} />
+                                <Label for="usernameInput">Username</Label>
+                                    <Input id="usernameInput" type="text" name="text" placeholder="Username/email" onChange={this.emailHandler} />
                             </FormGroup>
                             <FormGroup>
                                 <Label for="passwordInput">Password</Label>
