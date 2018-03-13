@@ -8,6 +8,9 @@ import { reactReduxFirebase } from 'react-redux-firebase';
 const defaultState = {
     authToken: "",
     isLoggedIn: false,
+    currentUser: "",
+    currentBrandName: "",
+    currentBrandId: ""
 }
 
 // react-redux-firebase options

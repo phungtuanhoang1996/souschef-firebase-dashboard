@@ -1,8 +1,11 @@
 // Stores the authentication token delivered by Firebase Auth
-export function login() {
+export function login(currentUser, currentBrandId, currentBrandName) {
     return {
         type: 'ACCT_LOGIN',
         isLoggedIn: true,
+        currentUser: currentUser,
+        currentBrandId: currentBrandId,
+        currentBrandName: currentBrandName
     }
 }
 
