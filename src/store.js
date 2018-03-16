@@ -5,12 +5,20 @@ import rootReducer from './reducers/index';
 import firebase from './firebase';
 import { reactReduxFirebase } from 'react-redux-firebase';
 
+// const defaultState = {
+//     authToken: "",
+//     isLoggedIn: false,
+//     currentUser: "",
+//     currentBrandName: "",
+//     currentBrandId: ""
+// }
+
 const defaultState = {
     authToken: "",
-    isLoggedIn: false,
-    currentUser: "",
-    currentBrandName: "",
-    currentBrandId: ""
+    isLoggedIn: true,
+    currentUser: "SGInnovate",
+    currentBrandName: "SGInnovate",
+    currentBrandId: "5a2dff31379f2d002779d2b3"
 }
 
 // react-redux-firebase options
