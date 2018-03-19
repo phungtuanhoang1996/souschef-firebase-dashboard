@@ -8,7 +8,9 @@ import './Dashboard.css';
 export default class Dashboard extends React.Component {
     state = {
         onlineMachines: {},
-        offlineMachines: {}
+        offlineMachines: {},
+        eventCodes: {},
+        selectedEvent: ""
     }
 
     countMachines = () => {
@@ -27,10 +29,15 @@ export default class Dashboard extends React.Component {
         })
     }
 
+    changeSelectedEvent = (event) => {
+        this.setState({
+            selectedEvent: event
+        })
+    }
+
     render() {
 
         if (this.props.machines != null) {
-            // console.log(this.props.machines[this.props.currentBrandName]);
         }
         return (
             <div className="wrapper">
@@ -38,7 +45,13 @@ export default class Dashboard extends React.Component {
                     <DrawerNavComponent currentUser={this.props.currentUser} currentBrandName={this.props.currentBrandName}/>
                 </div>
                 <div className="main">
-                    <OverviewComponent onlineMachines={this.state.onlineMachines} offlineMachines={this.state.offlineMachines}/>
+                    <OverviewComponent 
+                        onlineMachines={this.state.onlineMachines} 
+                        offlineMachines={this.state.offlineMachines}
+                        codes={this.state.eventCodes} 
+                        selectedEvent={this.state.selectedEvent}
+                        changeSelectedEvent={this.changeSelectedEvent}
+                        />
                 </div>
             </div>
         );
@@ -60,6 +73,12 @@ export default class Dashboard extends React.Component {
     componentWillReceiveProps(){
         if (this.props.machines != null) {
             this.countMachines();
+        }
+        if (this.props.brands != null) {
+            this.setState({
+                eventCodes: this.props.brands[this.props.currentBrandId].events,
+                selectedEvent: Object.keys(this.props.brands[this.props.currentBrandId].events)[0]
+            })
         }
     }
 }
