@@ -1,5 +1,6 @@
 import React from 'react';
 import MachinesCardComponent from './components/MachinesCardComponent';
+import CodeCardComponent from './components/CodeCardComponent';
 import './OverviewComponent.css';
 import { Card, CardBody, CardHeader, Col, Row } from 'reactstrap';
 import {styled} from 'styled-components';
@@ -19,6 +20,10 @@ export default class OverviewComponent extends React.Component {
                         </Col>
                     </Row>
                 </Card>
+                <CodeCardComponent 
+                                selectedEvent={this.props.selectedEvent} 
+                                changeSelectedEvent={this.props.changeSelectedEvent}
+                                codes={this.props.codes}/>     
             </div>
         );
     }
