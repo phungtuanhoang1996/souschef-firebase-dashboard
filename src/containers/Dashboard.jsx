@@ -1,7 +1,7 @@
 import React from 'react';
 import firebase  from '../firebase';
 import DrawerNavComponent from '../components/drawer/DrawerNavComponent';
-import OverviewComponent from '../components/overview/OverviewComponent';
+import OverviewComponent from '../containers/Overview/OverviewComponent';
 import { Col, Container, Row } from 'reactstrap';
 import './Dashboard.css';
 

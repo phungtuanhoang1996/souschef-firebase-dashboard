@@ -1,12 +1,13 @@
 import React from 'react';
-import MachinesCardComponent from './MachinesCardComponent';
+import MachinesCardComponent from './components/MachinesCardComponent';
 import './OverviewComponent.css';
 import { Card, CardBody, CardHeader, Col, Row } from 'reactstrap';
+import {styled} from 'styled-components';
 
 export default class OverviewComponent extends React.Component {
     render () {
         return (
-            <div className="wrapper">
+            <div>
                 <Card>
                     <CardHeader>Machines</CardHeader>
                     <Row>
