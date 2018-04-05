@@ -8,7 +8,7 @@ import {styled} from 'styled-components';
 export default class OverviewComponent extends React.Component {
     render () {
         return (
-            <div>
+            <div className="wrapper">
                 <Card>
                     <CardHeader>Machines</CardHeader>
                     <Row>

@@ -9,7 +9,7 @@ export default class NavBarComponent extends Component {
     render() {
         return(
             <div>
-                <Navbar color="info" light expand="md">
+                <Navbar color="info" light>
                     <NavbarBrand href="/">Souschef Realtime Dashboard</NavbarBrand>
                         <Nav className="ml-auto" navbar>
                             <NavItem>
