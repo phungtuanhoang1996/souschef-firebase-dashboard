@@ -18,10 +18,15 @@ const CodeCardComponent = (props) => {
                                     <DropdownItem divider/>
                                     {
                                         Object.keys(props.codes).map((event, i)=>{
-                                            return <div key={i}><DropdownItem disabled key={i} onClick={(e)=>{props.changeSelectedEvent(event)}}>
-                                                    {event}
-                                                </DropdownItem><DropdownItem divider/></div>
-
+                                            if (i !== Object.keys(props.codes).length - 1) {
+                                                return <div key={i}><DropdownItem key={i} onClick={(e)=>{props.changeSelectedEvent(event)}}>
+                                                        {event}
+                                                </DropdownItem><DropdownItem divider/></div> 
+                                            } else {
+                                                return <div key={i}><DropdownItem key={i} onClick={(e)=>{props.changeSelectedEvent(event)}}>
+                                                        {event}
+                                                        </DropdownItem></div> 
+                                            }
                                         })
                                     }
                                 </DropdownMenu>
