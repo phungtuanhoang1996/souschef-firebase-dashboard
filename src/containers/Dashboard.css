@@ -1,6 +1,7 @@
 .wrapper {
     display: flex;
-    flex-flow: column wrap;
+    flex-flow: row nowrap;
+    justify-content: center;
     height: 100vh;
   }
   
@@ -15,5 +16,6 @@
 .main {
     background: #9C9;
     flex: 1 1 auto;
+    height: 100%;
 }
 

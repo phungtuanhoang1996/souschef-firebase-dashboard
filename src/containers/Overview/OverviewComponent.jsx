@@ -34,22 +34,26 @@ class OverviewComponent extends React.Component {
         console.log(this.state.event)
 
         return (
-            <div className="wrapper">
-                <Card>
-                    <CardHeader>Machines</CardHeader>
-                    <Row>
-                        <Col sm="6">
-                            <MachinesCardComponent title="Online" machines={this.props.onlineMachines}/>                
-                        </Col>
-                        <Col sm="6">
-                            <MachinesCardComponent title="Offline" machines={this.props.offlineMachines}/>                
-                        </Col>
-                    </Row>
-                </Card>
-                <CodeCardComponent 
-                    selectedEvent={this.state.event} 
-                    changeSelectedEvent={this.changeSelectedEvent}
-                    codes={this.props.codes}/>     
+            <div className="overviewWrapper">
+                <div className="machinesCardComponent">
+                    <Card>
+                        <CardHeader>Machines</CardHeader>
+                        <Row>
+                            <Col sm="6">
+                                <MachinesCardComponent title="Online" machines={this.props.onlineMachines}/>                
+                            </Col>
+                            <Col sm="6">
+                                <MachinesCardComponent title="Offline" machines={this.props.offlineMachines}/>                
+                            </Col>
+                        </Row>
+                    </Card>
+                </div>
+                <div class="codeCardComponent">
+                    <CodeCardComponent 
+                        selectedEvent={this.state.event} 
+                        changeSelectedEvent={this.changeSelectedEvent}
+                        codes={this.props.codes}/>   
+                </div>  
             </div>
         );
     }

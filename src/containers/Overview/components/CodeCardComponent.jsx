@@ -46,7 +46,7 @@ const CodeCardComponent = (props) => {
                         </Col>
                     </Row>
                 </CardSubtitle>
-                <Table striped>
+                <Table striped bordered>
                     <thead>
                         <tr>
                             <th>Code</th>
