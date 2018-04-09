@@ -2,11 +2,12 @@ import React from 'react';
 import MachinesCardComponent from './components/MachinesCardComponent';
 import CodeCardComponent from './components/CodeCardComponent';
 import './OverviewComponent.css';
-import { Card, CardBody, CardHeader, Col, Row } from 'reactstrap';
+import { Input, InputGroupAddon, InputGroup, Button, Modal, ModalHeader, ModalBody, ModalFooter, Card, CardBody, CardHeader, Col, Row } from 'reactstrap';
 import {styled} from 'styled-components';
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { firebaseConnect, withFirebase, isLoaded, isEmpty } from 'react-redux-firebase'
+import CodeModificationModal from './components/CodeModificationModal'
 
 const mapStateToProps = (state) => {
     console.log('state is')
@@ -22,17 +23,12 @@ class OverviewComponent extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            event: 'ongoing'
+            event: 'ongoing',
+            codeModificationModal: false,
+            codeModificationDetails: null
         }
     }
     render () {
-        console.log('this.props.firebase')
-        console.log(this.props.firebase)
-        console.log('this.props.currentBrandID')
-        console.log(this.props.currentBrandId)
-        console.log('this.state.event')
-        console.log(this.state.event)
-
         return (
             <div className="overviewWrapper">
                 <div className="machinesCardComponent">
@@ -52,26 +48,55 @@ class OverviewComponent extends React.Component {
                     <CodeCardComponent 
                         selectedEvent={this.state.event} 
                         changeSelectedEvent={this.changeSelectedEvent}
-                        codes={this.props.codes}/>   
+                        codes={this.props.codes}  
+                        onModifyButtonClicked={this.showCodeModificationModal} />
                 </div>  
-            </div>
+                {/* <Modal isOpen={this.state.codeModificationModal} toggle={()=>this.toggle()} className={this.props.className}>
+                    <ModalHeader toggle={()=>this.toggle()}>Modal title</ModalHeader>
+                    <ModalBody>
+                        <InputGroup>
+                            <InputGroupAddon addonType="prepend">@</InputGroupAddon>
+                            <Input placeholder="username" />
+                        </InputGroup>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="primary" onClick={()=>this.toggle()}>Do Something</Button>{' '}
+                        <Button color="secondary" onClick={()=>this.toggle()}>Cancel</Button>
+                    </ModalFooter>
+                </Modal> */}
+                <CodeModificationModal
+                    isOpen={this.state.codeModificationModal}
+                    toggle={this.toggle}
+                    details={this.state.codeModificationDetails}
+                />
+            </div> 
         );
     }
-
-    // codes = () => {
-    //     console.log('firebase')
-    //     console.log(this.props.firebase)
-    //     if (this.state.event === 'ongoing') {
-    //         return 
-    //     } else if (this.state.event === 'offgoing') {
-    //         return null
-    //     } else return null
-    // }
 
     changeSelectedEvent = (event) => {
         console.log('changeSelectedEvent: clicked on ' + event)
         this.setState({
             event: event
+        })
+    }
+    
+    showCodeModificationModal = (code, startDate, endDate, useCount) => {
+        console.log('modification modal for ' + code + ' is shown')
+        this.setState({
+            codeModificationModal: true,
+            codeModificationDetails: {
+                code, 
+                startDate,
+                endDate,
+                useCount
+            }
+        })
+    }
+    
+    toggle = () => {
+        this.setState({
+            codeModificationModal: !this.state.codeModificationModal,
+            codeModificationDetails: null
         })
     }
 }

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, CardBody, CardHeader, CardTitle, CardSubtitle, Col, DropdownItem, DropdownToggle, DropdownMenu, Row, Table, UncontrolledDropdown } from 'reactstrap';
+import { Button, Card, CardBody, CardHeader, CardTitle, CardSubtitle, Col, DropdownItem, DropdownToggle, DropdownMenu, Row, Table, UncontrolledDropdown } from 'reactstrap';
 
 const CodeCardComponent = (props) => {
     return(
@@ -42,17 +42,18 @@ const CodeCardComponent = (props) => {
                                 Object.keys(props.codes).length != 0 ? 
                                 Object.keys(props.codes).length :
                                 0
-                             }
+                            }
                         </Col>
                     </Row>
                 </CardSubtitle>
                 <Table striped bordered>
                     <thead>
                         <tr>
-                            <th>Code</th>
-                            <th>Uses Left</th>
-                            <th>Start Date</th>
-                            <th>End Date</th>
+                            <th width="40%">Code</th>
+                            <th width="15%">Uses Left</th>
+                            <th width="15%">Start Date</th>
+                            <th width="15%">End Date</th>
+                            <th width="15%"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -60,23 +61,35 @@ const CodeCardComponent = (props) => {
                         Object.keys(props.codes).length != 0 ? 
                         Object.keys(props.codes[props.selectedEvent].codes).map((code)=>{
                             return <tr>
-                                <td>
+                                <td style={styles.tableData}>
                                     {code}
                                 </td>
-                                <td>
+                                <td style={styles.tableData}>
                                     {props.codes[props.selectedEvent].codes[code].use_count}
                                 </td>
-                                <td>
+                                <td style={styles.tableData}>
                                     {
                                         props.codes[props.selectedEvent].codes[code].start_date != "" ?
                                         props.codes[props.selectedEvent].codes[code].start_date : "N/A"
                                     }
                                 </td>
-                                <td>
+                                <td style={styles.tableData}>
                                     {
                                         props.codes[props.selectedEvent].codes[code].end_date != "" ?
                                         props.codes[props.selectedEvent].codes[code].end_date : "N/A"
                                     }
+                                </td>
+                                <td style={styles.modifyButtonCell}>
+                                    <Button onClick={() => {
+                                            props.onModifyButtonClicked(code, 
+                                                props.codes[props.selectedEvent].codes[code].start_date,
+                                                props.codes[props.selectedEvent].codes[code].end_date,
+                                                props.codes[props.selectedEvent].codes[code].use_count
+                                            )}
+                                        }
+                                    >
+                                        Modify
+                                    </Button>
                                 </td>
                             </tr>
                         })
@@ -87,6 +100,15 @@ const CodeCardComponent = (props) => {
             </CardBody>
         </Card>
     );
+}
+
+const styles = {
+    tableData: {
+        verticalAlign: "middle",
+    },
+    modifyButtonCell: {
+        textAlign: "center"
+    }
 }
 
 export default CodeCardComponent;
