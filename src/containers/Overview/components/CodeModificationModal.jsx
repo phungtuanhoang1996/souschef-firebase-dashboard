@@ -1,7 +1,7 @@
 import {Input, InputGroupAddon, InputGroup, Button, Modal, ModalHeader, ModalBody, ModalFooter, Collapse} from 'reactstrap'
 import React from 'react'
-// import DatePicker from 'react-datepicker'
-// import 'react-datepicker/dist/react-datepicker.css'
+import QrReader from 'react-qr-reader'
+
 
 export default class CodeModificationModal extends React.Component {
     constructor(props) {
@@ -12,7 +12,17 @@ export default class CodeModificationModal extends React.Component {
         }
     }
 
+    componentWillReceiveProps = (nextProps) => {
+        if (this.props !== nextProps) {
+            this.state = {
+                details: nextProps.details,
+                helperComponentFocus: null
+            }
+        }
+    }
+
     render() {
+        console.log(this.state.details)
         return (
             <div>
                 <Modal isOpen={this.props.isOpen} toggle={()=>this.props.toggle()} className={this.props.className}>
@@ -26,7 +36,7 @@ export default class CodeModificationModal extends React.Component {
 
                             <InputGroup size='normal' style={{marginBottom: '5px', marginTop: '5px'}}>
                                 <Input 
-                                    defaultValue={this.props.details ? this.props.details.code : null}
+                                    value={this.state.details ? this.state.details.code : null}
                                 >
                                 </Input>
                                 <InputGroupAddon addonType='append'>
@@ -35,7 +45,12 @@ export default class CodeModificationModal extends React.Component {
                             </InputGroup>
 
                             <Collapse isOpen={this.state.helperComponentFocus === 'qr' ? true : false}>
-                                <p>Placeholder for qr scanner</p>
+                                { this.state.helperComponentFocus === 'qr' ? (<QrReader
+                                    delay={500}
+                                    onError={(error) => this.handleQrError(error)}
+                                    onScan={(result) => this.handleQrResult(result)}
+                                    style={{ width: '100%' }}
+                                />) : null}
                             </Collapse>
 
                             <div
@@ -132,6 +147,23 @@ export default class CodeModificationModal extends React.Component {
             this.setState({
                 helperComponentFocus: 'endDatePicker'
             })
+        }
+    }
+
+    handleQrError = (error) => {
+        console.log(error)
+        this.toggleQrScanner()
+    }
+
+    handleQrResult = (result) => {
+        if (result !== null && this.state.helperComponentFocus === 'qr') {
+            this.setState(prevState => ({
+                details: {
+                    ...prevState.details,
+                    code: result
+                },
+                helperComponentFocus: null
+            }))
         }
     }
 }
