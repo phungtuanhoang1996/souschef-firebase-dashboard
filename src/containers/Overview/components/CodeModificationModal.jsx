@@ -1,14 +1,17 @@
 import {Input, InputGroupAddon, InputGroup, Button, Modal, ModalHeader, ModalBody, ModalFooter, Collapse} from 'reactstrap'
 import React from 'react'
 import QrReader from 'react-qr-reader'
+import DatePicker from 'react-datepicker'
 
+import 'react-datepicker/dist/react-datepicker.css';
 
 export default class CodeModificationModal extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
             details: props.details, // include code, start date, end date and use count
-            helperComponentFocus: null
+            helperComponentFocus: null,
+            qrCodeScannerRendering: false // this particular qr scanner must not be rendered while hidden in a Collapse 
         }
     }
 
@@ -16,7 +19,8 @@ export default class CodeModificationModal extends React.Component {
         if (this.props !== nextProps) {
             this.state = {
                 details: nextProps.details,
-                helperComponentFocus: null
+                helperComponentFocus: null,
+                qrCodeScannerRendering: false
             }
         }
     }
@@ -45,7 +49,7 @@ export default class CodeModificationModal extends React.Component {
                             </InputGroup>
 
                             <Collapse isOpen={this.state.helperComponentFocus === 'qr' ? true : false}>
-                                { this.state.helperComponentFocus === 'qr' ? (<QrReader
+                                { this.state.qrCodeScannerRendering  ? (<QrReader
                                     delay={500}
                                     onError={(error) => this.handleQrError(error)}
                                     onScan={(result) => this.handleQrResult(result)}
@@ -70,7 +74,13 @@ export default class CodeModificationModal extends React.Component {
                             </InputGroup>
 
                             <Collapse isOpen={this.state.helperComponentFocus === 'startDatePicker' ? true : false}>
-                                <p>Placeholder for start date picker</p>
+                                <div style={{display: "flex"}}>
+                                    <DatePicker
+                                        inline
+                                        selected={this.state.startDate}
+                                        onChange={this.handleChange}
+                                    />
+                                </div>
                             </Collapse>
 
                             <div
@@ -119,9 +129,15 @@ export default class CodeModificationModal extends React.Component {
             this.setState({
                 helperComponentFocus: null
             })
+            setTimeout(() => {
+                this.setState({
+                    qrCodeScannerRendering: false
+                })
+            }, 1000)
         } else {
             this.setState({
-                helperComponentFocus: 'qr'
+                helperComponentFocus: 'qr',
+                qrCodeScannerRendering: true
             })
         }
     }
@@ -161,9 +177,14 @@ export default class CodeModificationModal extends React.Component {
                 details: {
                     ...prevState.details,
                     code: result
-                },
+                }, 
                 helperComponentFocus: null
             }))
+            setTimeout(() => {
+                this.setState({
+                    qrCodeScannerRendering: false
+                })
+            }, 1000)
         }
     }
 }
