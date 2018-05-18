@@ -121,8 +121,11 @@ export default class CodeModificationModal extends React.Component {
                                 Use Count
                             </div>
 
-                            <Input 
-                                defaultValue={this.props.details ? this.props.details.useCount : null}
+                            <Input
+                               type="number"
+                                defaultValue={(this.props.details && this.props.details.useCount) ? this.props.details.useCount : null}
+                                value={(this.state && this.state.details && this.state.details.useCount) ? this.state.details.useCount : null}
+                                onChange={(event) => {this.handleUseCountChange(event)}}
                                 style={{marginBottom: '5px', marginTop: '5px'}}>
                             </Input>
                                             
@@ -224,6 +227,15 @@ export default class CodeModificationModal extends React.Component {
            details: {
               ...this.state.details,
               startDate: date.format("DD/MM/YYYY")
+           }
+        })
+    }
+
+    handleUseCountChange = (event) => {
+        this.setState({
+           details: {
+              ...this.state.details,
+              useCount: parseInt(event.target.value)
            }
         })
     }
