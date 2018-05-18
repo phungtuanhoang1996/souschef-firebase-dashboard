@@ -38,14 +38,11 @@ export default class CodeModificationModal extends React.Component {
 	}
 
 	render() {
-		const closeButton = (<Button color="secondary" onClick={() => this.props.toggle()}>Cancel</Button>)
-
 		if (this.state.details && this.state.details.startDate) console.log(moment(this.state.details.startDate, "DD/MM/YYYY"))
 		if (this.state.details && this.state.details.endDate) console.log(moment(this.state.details.endDate, "DD/MM/YYYY"))
 		return (
 			<div>
-				<Modal isOpen={this.props.isOpen} toggle={() => this.props.toggle()} className={this.props.className}
-						 external={closeButton}>
+				<Modal isOpen={this.props.isOpen} toggle={() => this.props.toggle()} className={this.props.className}>
 					<ModalHeader toggle={() => this.props.toggle()}>Modify QR code</ModalHeader>
 					<ModalBody>
 						<div
@@ -156,7 +153,7 @@ export default class CodeModificationModal extends React.Component {
 					<ModalFooter>
 						<Button color="primary" onClick={() => this.handleSaveChangesButtonClicked()}>Save
 							changes</Button>{' '}
-						{closeButton}
+						<Button color="secondary" onClick={() => this.props.toggle()}>Cancel</Button>
 					</ModalFooter>
 				</Modal>
 			</div>
@@ -299,7 +296,7 @@ export default class CodeModificationModal extends React.Component {
 
 			// case 1: QR code unchanged
 			if (this.state.details.code === this.props.details.code) {
-				firebase.database().ref('/brands/' + this.props.details.currentBrandId + '/events/ongoing/codes/' + this.props.details.code).update({
+				firebase.database().ref('/brands/' + this.props.details.currentBrandId + '/events/' + this.state.details.eventType + '/codes/' + this.props.details.code).update({
 					start_date: this.state.details.startDate,
 					end_date: this.state.details.endDate,
 					use_count: this.state.details.useCount
@@ -314,12 +311,12 @@ export default class CodeModificationModal extends React.Component {
 			// case 2: QR code is changed
 			if (this.state.details.code !== this.props.details.code) {
 				//delete the old node
-				firebase.database().ref('/brands/' + this.props.details.currentBrandId + '/events/ongoing/codes/' + this.props.details.code).remove((message) => {
+				firebase.database().ref('/brands/' + this.props.details.currentBrandId + '/events/' + this.state.details.eventType + '/codes/' + this.props.details.code).remove((message) => {
 					console.log(message)
 				})
 
 				//create a new node
-				firebase.database().ref('/brands/' + this.props.details.currentBrandId + '/events/ongoing/codes/' + this.state.details.code).set({
+				firebase.database().ref('/brands/' + this.props.details.currentBrandId + '/events/' + this.state.details.eventType + '/codes/' + this.state.details.code).set({
 					start_date: this.state.details.startDate,
 					end_date: this.state.details.endDate,
 					use_count: this.state.details.useCount

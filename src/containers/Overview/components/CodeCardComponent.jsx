@@ -25,7 +25,7 @@ const CodeCardComponent = (props) => {
                                             } else {
                                                 return <div key={i}><DropdownItem key={i} onClick={(e)=>{props.changeSelectedEvent(event)}}>
                                                         {event}
-                                                        </DropdownItem></div> 
+                                                        </DropdownItem></div>
                                             }
                                         })
                                     }
@@ -34,14 +34,10 @@ const CodeCardComponent = (props) => {
                         </Col>
                         <Col>
                             Code Count: {' '}
-                            {console.log(props.codes)
-                            }
-                            {                            console.log(Object.keys(props.codes).length)
-}
+                            {console.log(props.codes)}
+                            {console.log(Object.keys(props.codes).length)}
                             {
-                                Object.keys(props.codes).length != 0 ? 
-                                Object.keys(props.codes).length :
-                                0
+                                Object.keys(props.codes).length != 0 ? Object.keys(props.codes).length : 0
                             }
                         </Col>
                     </Row>

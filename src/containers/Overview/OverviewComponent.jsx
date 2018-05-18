@@ -76,6 +76,7 @@ class OverviewComponent extends React.Component {
 	showCodeModificationModal = (code, startDate, endDate, useCount) => {
 		console.log('modification modal for ' + code + ' is shown')
 		var currentBrandId = this.props.currentBrandId
+		var eventType = this.state.event
 		this.setState({
 			codeModificationModal: true,
 			codeModificationDetails: {
@@ -83,7 +84,8 @@ class OverviewComponent extends React.Component {
 				startDate,
 				endDate,
 				useCount,
-				currentBrandId
+				currentBrandId,
+				eventType
 			}
 		})
 	}
