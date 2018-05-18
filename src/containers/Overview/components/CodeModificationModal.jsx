@@ -3,6 +3,7 @@ import React from 'react'
 import QrReader from 'react-qr-reader'
 import DatePicker from 'react-datepicker'
 import moment from 'moment'
+import firebase from 'firebase'
 
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -259,6 +260,23 @@ export default class CodeModificationModal extends React.Component {
 
     handleSaveChangesButtonClicked = () => {
         if (this.isInputValid() == false) console.log("Save Changes clicked but input is INVALID")
-        else console.log("Save changes clicked, input is VALID")
+        else {
+           console.log("Save changes clicked, input is VALID")
+
+           // 2 cases here: QR code changed or unchanged
+
+           // case 1: QR code unchanged
+           if (this.state.details.code === this.props.details.code) {
+				  firebase.database().ref('/brands/' + this.props.details.currentBrandId + '/events/ongoing/codes/' + this.props.details.code).update({
+                 start_date: this.state.details.startDate,
+                 end_date: this.state.details.endDate,
+                 use_count: this.state.details.useCount
+              }).then((success) => {
+                 console.log(success)
+              }, (error) => {
+                 console.log(error)
+              })
+			  }
+		  }
     }
 }
