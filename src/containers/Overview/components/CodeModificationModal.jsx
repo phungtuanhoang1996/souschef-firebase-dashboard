@@ -2,6 +2,7 @@ import {Input, InputGroupAddon, InputGroup, Button, Modal, ModalHeader, ModalBod
 import React from 'react'
 import QrReader from 'react-qr-reader'
 import DatePicker from 'react-datepicker'
+import moment from 'moment'
 
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -27,6 +28,8 @@ export default class CodeModificationModal extends React.Component {
 
     render() {
         console.log(this.state.details)
+        if (this.state.details && this.state.details.startDate) console.log(moment(this.state.details.startDate, "DD/MM/YYYY"))
+		  if (this.state.details && this.state.details.endDate) console.log(moment(this.state.details.endDate, "DD/MM/YYYY"))
         return (
             <div>
                 <Modal isOpen={this.props.isOpen} toggle={()=>this.props.toggle()} className={this.props.className}>
@@ -64,8 +67,9 @@ export default class CodeModificationModal extends React.Component {
                             </div>
 
                             <InputGroup size='normal' style={{marginBottom: '5px', marginTop: '5px'}}>
-                                <Input 
-                                    defaultValue={this.props.details && this.props.details.startDate !== '' ? this.props.details.startDate : "Not set"}
+                                <Input
+                                    type='text'
+                                    value={this.state.details && this.state.details.startDate !== '' ? this.state.details.startDate : "Not set"}
                                 >
                                 </Input>
                                 <InputGroupAddon addonType='append'>
@@ -79,8 +83,8 @@ export default class CodeModificationModal extends React.Component {
                                 <div style={{display: "flex", width: "100%", alignItems: "center", justifyContent: "center"}}>
                                     <DatePicker
                                         inline
-                                        selected={this.state.startDate}
-                                        onChange={this.handleChange}
+													 selected={(this.state.details && this.state.details.startDate) ? moment(this.state.details.startDate , 'DD/MM/YYYY') : moment()}
+													 onChange={date => {this.handleStartDateChange(date)}}
                                     />
                                 </div>
                             </Collapse>
@@ -92,8 +96,8 @@ export default class CodeModificationModal extends React.Component {
                             </div>
 
                             <InputGroup size='normal' style={{marginBottom: '5px', marginTop: '5px'}}>
-                                <Input 
-                                    defaultValue={this.props.details && this.props.details.endDate !== '' ? this.props.details.endDate : "Not set"}
+                                <Input
+                                    value={(this.state.details && this.state.details.endDate !== '') ? this.state.details.endDate : "Not set"}
                                 >
                                 </Input>
                                 <InputGroupAddon addonType='append'>
@@ -105,8 +109,8 @@ export default class CodeModificationModal extends React.Component {
                                 <div style={{display: "flex", width: "100%", alignItems: "center", justifyContent: "center"}}>
                                     <DatePicker
                                         inline
-                                        selected={this.state.endDate}
-                                        onChange={this.handleChange}
+                                        selected={(this.state.details && this.state.details.endDate) ? moment(this.state.details.endDate, 'DD/MM/YYYY')  : moment()}
+                                        onChange={date => {this.handleEndDateChange(date)}}
                                     />
                                 </div>
                             </Collapse>
@@ -204,5 +208,23 @@ export default class CodeModificationModal extends React.Component {
                 })
             }, 1000)
         }
+    }
+
+    handleEndDateChange = (date) => {
+		 this.setState({
+          details: {
+             ...this.state.details,
+             endDate: date.format("DD/MM/YYYY")
+          }
+       })
+	 }
+
+	 handleStartDateChange = (date) => {
+        this.setState({
+           details: {
+              ...this.state.details,
+              startDate: date.format("DD/MM/YYYY")
+           }
+        })
     }
 }
