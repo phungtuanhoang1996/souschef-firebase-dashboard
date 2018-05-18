@@ -131,7 +131,7 @@ export default class CodeModificationModal extends React.Component {
                                             
                     </ModalBody>
                     <ModalFooter>
-                        <Button color="primary" onClick={()=>this.props.toggle()}>Do Something</Button>{' '}
+                        <Button color="primary" onClick={()=>this.handleSaveChangesButtonClicked()}>Save changes</Button>{' '}
                         <Button color="secondary" onClick={()=>this.props.toggle()}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
@@ -238,5 +238,27 @@ export default class CodeModificationModal extends React.Component {
               useCount: parseInt(event.target.value)
            }
         })
+    }
+
+    isInputValid = () => {
+        //initial state check
+       if (!this.state || !this.state.details || !this.state.details.startDate || !this.state.details.endDate || !this.state.details.useCount) {
+           return false
+       }
+
+        //check end date is after start date
+       var startDate = moment(this.state.details.startDate, "DD/MM/YYYY")
+       var endDate = moment(this.state.details.endDate, "DD/MM/YYYY")
+       if (endDate.isBefore(startDate)) return false
+
+       //check use count
+       if (!Number.isInteger(this.state.details.useCount) || this.state.details.useCount < 0) return false
+
+       return true
+    }
+
+    handleSaveChangesButtonClicked = () => {
+        if (this.isInputValid() == false) console.log("Save Changes clicked but input is INVALID")
+        else console.log("Save changes clicked, input is VALID")
     }
 }
