@@ -56,7 +56,11 @@ export default class CodeModificationModal extends React.Component {
 
 						<InputGroup size='normal' style={{marginBottom: '5px', marginTop: '5px'}}>
 							<Input
+								defaultValue={this.state.details ? this.state.details.code : null}
 								value={this.state.details ? this.state.details.code : null}
+								onChange={(event) => {
+									this.handleQRchange(event)
+								}}
 							>
 							</Input>
 							<InputGroupAddon addonType='append'>
@@ -260,13 +264,20 @@ export default class CodeModificationModal extends React.Component {
 		})
 	}
 
+	handleQRchange = (event) => {
+		this.setState({
+			details: {
+				...this.state.details,
+				code: event.target.value
+			}
+		})
+	}
+
 	isInputValid = () => {
 		//initial state check
 		if (!this.state || !this.state.details || !this.state.details.code || !this.state.details.startDate || !this.state.details.endDate || !this.state.details.useCount) {
 			return false
 		}
-
-		//
 
 		//check end date is after start date
 		var startDate = moment(this.state.details.startDate, "DD/MM/YYYY")
