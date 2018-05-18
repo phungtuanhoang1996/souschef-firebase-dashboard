@@ -73,8 +73,10 @@ export default class CodeModificationModal extends React.Component {
                                 </InputGroupAddon>
                             </InputGroup>
 
-                            <Collapse isOpen={this.state.helperComponentFocus === 'startDatePicker' ? true : false}>
-                                <div style={{display: "flex"}}>
+                            <Collapse
+                               isOpen={this.state.helperComponentFocus === 'startDatePicker' ? true : false}
+                            >
+                                <div style={{display: "flex", width: "100%", alignItems: "center", justifyContent: "center"}}>
                                     <DatePicker
                                         inline
                                         selected={this.state.startDate}
@@ -100,7 +102,13 @@ export default class CodeModificationModal extends React.Component {
                             </InputGroup>
 
                             <Collapse isOpen={this.state.helperComponentFocus === 'endDatePicker' ? true : false}>
-                                <p>Placeholder for end date pickerr</p>
+                                <div style={{display: "flex", width: "100%", alignItems: "center", justifyContent: "center"}}>
+                                    <DatePicker
+                                        inline
+                                        selected={this.state.endDate}
+                                        onChange={this.handleChange}
+                                    />
+                                </div>
                             </Collapse>
 
                             <div
@@ -151,6 +159,11 @@ export default class CodeModificationModal extends React.Component {
             this.setState({
                 helperComponentFocus: 'startDatePicker'
             })
+            setTimeout(() => {
+                this.setState({
+                    qrCodeScannerRendering: false
+                })
+            }, 1000)
         }
     }
 
@@ -163,6 +176,11 @@ export default class CodeModificationModal extends React.Component {
             this.setState({
                 helperComponentFocus: 'endDatePicker'
             })
+            setTimeout(() => {
+                this.setState({
+                    qrCodeScannerRendering: false
+                })
+            }, 1000)
         }
     }
 
