@@ -55,6 +55,7 @@ class OverviewComponent extends React.Component {
 						selectedEvent={this.state.event}
 						changeSelectedEvent={this.changeSelectedEvent}
 						codes={this.props.codes}
+						currentBrandId={this.props.currentBrandId}
 						onModifyButtonClicked={this.showCodeModificationModal}/>
 				</div>
 				<CodeModificationModal

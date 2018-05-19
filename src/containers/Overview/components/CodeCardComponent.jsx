@@ -1,7 +1,18 @@
 import React, { Component } from 'react';
 import { Button, Card, CardBody, CardHeader, CardTitle, CardSubtitle, Col, DropdownItem, DropdownToggle, DropdownMenu, Row, Table, UncontrolledDropdown } from 'reactstrap';
+import bindFirebaseBrand from '../../../FirebaseUtils/bindFirebaseBrand'
 
 const CodeCardComponent = (props) => {
+    console.log("code card old props")
+    console.log(props.codes)
+
+	 const codesTypeToBeShown = () => {
+		  if (props.selectedEvent === 'ongoing') return props.firebaseCodesOngoing
+        else if (props.selectedEvent === 'offgoing') return props.firebaseCodesOffgoing
+    }
+
+    var totalCodesCount = (!props.firebaseCodesOffgoing || !props.firebaseCodesOngoing) ? 0 : Object.keys(props.firebaseCodesOngoing).length + Object.keys(props.firebaseCodesOffgoing).length
+
     return(
         <Card>
             <CardHeader>Event Codes</CardHeader>
@@ -54,33 +65,31 @@ const CodeCardComponent = (props) => {
                     </thead>
                     <tbody>
                     {
-                        Object.keys(props.codes).length != 0 ? 
-                        Object.keys(props.codes[props.selectedEvent].codes).map((code)=>{
+                        totalCodesCount != 0 ?
+                        Object.keys(codesTypeToBeShown()).map((code)=>{
                             return <tr>
                                 <td style={styles.tableData}>
                                     {code}
                                 </td>
                                 <td style={styles.tableData}>
-                                    {props.codes[props.selectedEvent].codes[code].use_count}
+                                    {codesTypeToBeShown()[code].use_count}
                                 </td>
                                 <td style={styles.tableData}>
                                     {
-                                        props.codes[props.selectedEvent].codes[code].start_date != "" ?
-                                        props.codes[props.selectedEvent].codes[code].start_date : "N/A"
+													 codesTypeToBeShown()[code].start_date != "" ? codesTypeToBeShown()[code].start_date : "N/A"
                                     }
                                 </td>
                                 <td style={styles.tableData}>
                                     {
-                                        props.codes[props.selectedEvent].codes[code].end_date != "" ?
-                                        props.codes[props.selectedEvent].codes[code].end_date : "N/A"
+													 codesTypeToBeShown()[code].end_date != "" ? codesTypeToBeShown()[code].end_date : "N/A"
                                     }
                                 </td>
                                 <td style={styles.modifyButtonCell}>
                                     <Button onClick={() => {
-                                            props.onModifyButtonClicked(code, 
-                                                props.codes[props.selectedEvent].codes[code].start_date,
-                                                props.codes[props.selectedEvent].codes[code].end_date,
-                                                props.codes[props.selectedEvent].codes[code].use_count
+                                            props.onModifyButtonClicked(code,
+                                               codesTypeToBeShown()[code].start_date,
+															  codesTypeToBeShown()[code].end_date,
+															  codesTypeToBeShown()[code].use_count
                                             )}
                                         }
                                     >
@@ -107,4 +116,4 @@ const styles = {
     }
 }
 
-export default CodeCardComponent;
+export default bindFirebaseBrand(CodeCardComponent)
