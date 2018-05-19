@@ -7,7 +7,9 @@ import {
 	ModalHeader,
 	ModalBody,
 	ModalFooter,
-	Collapse
+	Collapse,
+	Card,
+	CardBody
 } from 'reactstrap'
 import React from 'react'
 import QrReader from 'react-qr-reader'
@@ -23,17 +25,25 @@ export default class CodeModificationModal extends React.Component {
 		this.state = {
 			details: props.details, // include code, start date, end date and use count
 			helperComponentFocus: null,
-			qrCodeScannerRendering: false // this particular qr scanner must not be rendered while hidden in a Collapse
+			qrCodeScannerRendering: false, // this particular qr scanner must not be rendered while hidden in a Collapse
+			invalidInputCollapse: false,
+			inputValidity: {
+
+			}
 		}
 	}
 
 	componentWillReceiveProps = (nextProps) => {
 		if (this.props !== nextProps) {
-			this.state = {
+			this.setState({
 				details: nextProps.details,
 				helperComponentFocus: null,
-				qrCodeScannerRendering: false
-			}
+				qrCodeScannerRendering: false,
+				invalidInputCollapse: false,
+				inputValidity: {
+
+				}
+			})
 		}
 	}
 
@@ -51,7 +61,7 @@ export default class CodeModificationModal extends React.Component {
 							Code
 						</div>
 
-						<InputGroup size='normal' style={{marginBottom: '5px', marginTop: '5px'}}>
+						<InputGroup size='normal' style={{marginBottom: '5px', marginTop: '5px'}} onClick={() => {this.closeInvalidInputCollapse()}}>
 							<Input
 								defaultValue={this.state.details ? this.state.details.code : null}
 								value={this.state.details ? this.state.details.code : null}
@@ -80,7 +90,7 @@ export default class CodeModificationModal extends React.Component {
 							Start Date
 						</div>
 
-						<InputGroup size='normal' style={{marginBottom: '5px', marginTop: '5px'}}>
+						<InputGroup size='normal' style={{marginBottom: '5px', marginTop: '5px'}} onClick={() => {this.closeInvalidInputCollapse()}}>
 							<Input
 								type='text'
 								value={this.state.details && this.state.details.startDate !== '' ? this.state.details.startDate : "Not set"}
@@ -111,7 +121,7 @@ export default class CodeModificationModal extends React.Component {
 							End Date
 						</div>
 
-						<InputGroup size='normal' style={{marginBottom: '5px', marginTop: '5px'}}>
+						<InputGroup size='normal' style={{marginBottom: '5px', marginTop: '5px'}} onClick={() => {this.closeInvalidInputCollapse()}}>
 							<Input
 								value={(this.state.details && this.state.details.endDate !== '') ? this.state.details.endDate : "Not set"}
 							>
@@ -146,8 +156,19 @@ export default class CodeModificationModal extends React.Component {
 							onChange={(event) => {
 								this.handleUseCountChange(event)
 							}}
-							style={{marginBottom: '5px', marginTop: '5px'}}>
+							style={{marginBottom: '5px', marginTop: '5px'}}
+							onClick={() => {this.closeInvalidInputCollapse()}}>
 						</Input>
+
+						<Collapse isOpen={this.state.invalidInputCollapse}>
+							<Card>
+								<CardBody>
+									{this.state.inputValidity.codeIllegalChar ? <p>- Code must be a non-empty string and can not contain ".", "#", "$", "[", or "]"</p> : null}
+									{this.state.inputValidity.startDateAfterEndDate ? <p>- End date must be after start date</p> : null}
+									{this.state.inputValidity.useCountWrongFormat ? <p>- Use count must be a positive number</p> : null}
+								</CardBody>
+							</Card>
+						</Collapse>
 
 					</ModalBody>
 					<ModalFooter>
@@ -270,25 +291,65 @@ export default class CodeModificationModal extends React.Component {
 		})
 	}
 
-	isInputValid = () => {
+	validateInput = () => {
 		//initial state check
+		var validationResult = {
+			isValid: true
+		}
+
 		if (!this.state || !this.state.details || !this.state.details.code || !this.state.details.startDate || !this.state.details.endDate || !this.state.details.useCount) {
-			return false
+			console.log("Input is validated -> uninitialized")
+			validationResult = {
+				...validationResult, uninitialised: true, isValid: false
+			}
+			return validationResult
 		}
 
 		//check end date is after start date
 		var startDate = moment(this.state.details.startDate, "DD/MM/YYYY")
 		var endDate = moment(this.state.details.endDate, "DD/MM/YYYY")
-		if (endDate.isBefore(startDate)) return false
+		if (endDate.isBefore(startDate)) {
+			console.log("Input is validated -> end before start")
+			validationResult = {
+				...validationResult, startDateAfterEndDate: true, isValid: false
+			}
+		}
 
 		//check use count
-		if (!Number.isInteger(this.state.details.useCount) || this.state.details.useCount < 0) return false
+		if (!Number.isInteger(this.state.details.useCount) || this.state.details.useCount < 0) {
+			console.log("Input is validated -> use count format wrong")
+			validationResult = {
+				...validationResult, useCountWrongFormat: true, isValid: false
+			}
+		}
 
-		return true
+		// check if QR contains illegal characters
+		// Paths must be non-empty strings and can't contain ".", "#", "$", "[", or "]"
+		if (this.state.details.code.includes('.') || this.state.details.code.includes('#')
+			|| this.state.details.code.includes('$') || this.state.details.code.includes('[')
+			|| this.state.details.code.includes(']') || this.state.details.code === '') {
+			console.log("Input is validated -> illegal characters in code")
+			validationResult = {
+				...validationResult, codeIllegalChar: true, isValid: false
+			}
+		}
+
+		console.log('At the end of validity check: isValid is ' + validationResult.isValid)
+		return validationResult
 	}
 
 	handleSaveChangesButtonClicked = () => {
-		if (this.isInputValid() == false) console.log("Save Changes clicked but input is INVALID")
+		var validationResult = this.validateInput()
+
+		if (!validationResult.isValid) {
+			console.log("Save Changes clicked but input is INVALID")
+			console.log((this.state.inputValidity))
+			this.setState({
+				helperComponentFocus: null,
+				invalidInputCollapse: true,
+				inputValidity: validationResult
+			})
+		}
 		else {
 			console.log("Save changes clicked, input is VALID")
 
@@ -328,5 +389,11 @@ export default class CodeModificationModal extends React.Component {
 				})
 			}
 		}
+	}
+
+	closeInvalidInputCollapse = () => {
+		this.setState({
+			invalidInputCollapse: false
+		})
 	}
 }
