@@ -12,7 +12,10 @@ import {
 	DropdownMenu,
 	Row,
 	Table,
-	UncontrolledDropdown
+	UncontrolledDropdown,
+	InputGroup,
+	Input,
+	InputGroupAddon
 } from 'reactstrap';
 import bindFirebaseBrand from '../../../FirebaseUtils/bindFirebaseBrand'
 
@@ -31,54 +34,64 @@ const CodeCardComponent = (props) => {
 		<Card>
 			<CardHeader>Event Codes</CardHeader>
 			<CardBody>
-				<CardSubtitle>
-					<Row>
-						<Col>
-							<UncontrolledDropdown>
-								<DropdownToggle caret>
-									{props.selectedEvent}
-								</DropdownToggle>
-								<DropdownMenu>
-									<DropdownItem header>Event</DropdownItem>
-									<DropdownItem divider/>
-									{
-										Object.keys(props.codes).map((event, i) => {
-											if (i !== Object.keys(props.codes).length - 1) {
-												return (
-													<div key={i}>
-														<DropdownItem key={i} onClick={(e) => {
-															props.changeSelectedEvent(event)
-														}}>
-															{event}
-														</DropdownItem>
-														<DropdownItem divider/>
-													</div>
-												)
-											} else {
-												return (
-													<div key={i}>
-														<DropdownItem key={i} onClick={(e) => {
-															props.changeSelectedEvent(event)
-														}}>
-															{event}
-														</DropdownItem>
-													</div>
-												)
-											}
-										})
-									}
-								</DropdownMenu>
-							</UncontrolledDropdown>
-						</Col>
-						<Col>
-							Code Count: {' '}
-							{console.log(props.codes)}
-							{console.log(Object.keys(props.codes).length)}
+				<CardTitle className="text-center">
+					Code Count: {' '}
+					{console.log(props.codes)}
+					{console.log(Object.keys(props.codes).length)}
+					{
+						totalCodesCount
+					}
+				</CardTitle>
+				<CardSubtitle style={{marginBottom: '5px', display: "flex"}}>
+					<UncontrolledDropdown style={{marginRight: '5px'}}>
+						<DropdownToggle caret>
+							{props.selectedEvent}
+						</DropdownToggle>
+						<DropdownMenu>
+							<DropdownItem header>Event</DropdownItem>
+							<DropdownItem divider/>
 							{
-								totalCodesCount
+								Object.keys(props.codes).map((event, i) => {
+									if (i !== Object.keys(props.codes).length - 1) {
+										return (
+											<div key={i}>
+												<DropdownItem key={i} onClick={(e) => {
+													props.changeSelectedEvent(event)
+												}}>
+													{event}
+												</DropdownItem>
+												<DropdownItem divider/>
+											</div>
+										)
+									} else {
+										return (
+											<div key={i}>
+												<DropdownItem key={i} onClick={(e) => {
+													props.changeSelectedEvent(event)
+												}}>
+													{event}
+												</DropdownItem>
+											</div>
+										)
+									}
+								})
 							}
-						</Col>
-					</Row>
+						</DropdownMenu>
+					</UncontrolledDropdown>
+
+					<InputGroup size='normal' style={{marginLeft: '5px', marginRight: '5px'}}>
+						<Input
+							//this is to be done
+						>
+						</Input>
+						<InputGroupAddon addonType='append'>
+							<Button onClick={() => {}}>QR Scanner</Button>
+							{/*this is to be done*/}
+						</InputGroupAddon>
+					</InputGroup>
+
+					<Button color="primary">Add</Button>
+					{/*this is to be done*/}
 				</CardSubtitle>
 				<Table striped bordered>
 					<thead>
