@@ -63,8 +63,8 @@ export default class CodeModificationModal extends React.Component {
 
 						<InputGroup size='normal' style={{marginBottom: '5px', marginTop: '5px'}} onClick={() => {this.closeInvalidInputCollapse()}}>
 							<Input
-								defaultValue={this.state.details ? this.state.details.code : null}
-								value={this.state.details ? this.state.details.code : null}
+								defaultValue={this.state.details ? this.state.details.code : ''}
+								value={this.state.details ? this.state.details.code : ''}
 								onChange={(event) => {
 									this.handleQRchange(event)
 								}}
@@ -94,6 +94,9 @@ export default class CodeModificationModal extends React.Component {
 							<Input
 								type='text'
 								value={this.state.details && this.state.details.startDate !== '' ? this.state.details.startDate : "Not set"}
+								onChange={(event) => {
+									this.handleStartDateChange(event)
+								}}
 							>
 							</Input>
 							<InputGroupAddon addonType='append'>
@@ -109,7 +112,7 @@ export default class CodeModificationModal extends React.Component {
 									inline
 									selected={(this.state.details && this.state.details.startDate) ? moment(this.state.details.startDate, 'DD/MM/YYYY') : moment()}
 									onChange={date => {
-										this.handleStartDateChange(date)
+										this.handleStartDateSelected(date)
 									}}
 								/>
 							</div>
@@ -124,6 +127,9 @@ export default class CodeModificationModal extends React.Component {
 						<InputGroup size='normal' style={{marginBottom: '5px', marginTop: '5px'}} onClick={() => {this.closeInvalidInputCollapse()}}>
 							<Input
 								value={(this.state.details && this.state.details.endDate !== '') ? this.state.details.endDate : "Not set"}
+								onChange={(event) => {
+									this.handleEndDateChange(event)
+								}}
 							>
 							</Input>
 							<InputGroupAddon addonType='append'>
@@ -137,7 +143,7 @@ export default class CodeModificationModal extends React.Component {
 									inline
 									selected={(this.state.details && this.state.details.endDate) ? moment(this.state.details.endDate, 'DD/MM/YYYY') : moment()}
 									onChange={date => {
-										this.handleEndDateChange(date)
+										this.handleEndDateSelected(date)
 									}}
 								/>
 							</div>
@@ -164,6 +170,7 @@ export default class CodeModificationModal extends React.Component {
 							<Card>
 								<CardBody>
 									{this.state.inputValidity.codeIllegalChar ? <p>- Code must be a non-empty string and can not contain ".", "#", "$", "[", or "]"</p> : null}
+									{this.state.inputValidity.datesFormatWrong ? <p>- Format of dates is wrong. Must be in DD/MM/YYYY</p> : null}
 									{this.state.inputValidity.startDateAfterEndDate ? <p>- End date must be after start date</p> : null}
 									{this.state.inputValidity.useCountWrongFormat ? <p>- Use count must be a positive number</p> : null}
 								</CardBody>
@@ -255,7 +262,7 @@ export default class CodeModificationModal extends React.Component {
 		}
 	}
 
-	handleEndDateChange = (date) => {
+	handleEndDateSelected = (date) => {
 		this.setState({
 			details: {
 				...this.state.details,
@@ -264,11 +271,29 @@ export default class CodeModificationModal extends React.Component {
 		})
 	}
 
-	handleStartDateChange = (date) => {
+	handleStartDateSelected = (date) => {
 		this.setState({
 			details: {
 				...this.state.details,
 				startDate: date.format("DD/MM/YYYY")
+			}
+		})
+	}
+
+	handleStartDateChange = (event) => {
+		this.setState({
+			details: {
+				...this.state.details,
+				startDate: event.target.value
+			}
+		})
+	}
+
+	handleEndDateChange = (event) => {
+		this.setState({
+			details: {
+				...this.state.details,
+				endDate: event.target.value
 			}
 		})
 	}
@@ -305,10 +330,17 @@ export default class CodeModificationModal extends React.Component {
 			return validationResult
 		}
 
+		//check start/end date format
 		//check end date is after start date
 		var startDate = moment(this.state.details.startDate, "DD/MM/YYYY")
 		var endDate = moment(this.state.details.endDate, "DD/MM/YYYY")
-		if (endDate.isBefore(startDate)) {
+
+		if (!startDate.isValid() || !endDate.isValid()) {
+			console.log("Input is validated -> dates format wrong")
+			validationResult = {
+				...validationResult, datesFormatWrong: true, isValid: false
+			}
+		} else if (endDate.isBefore(startDate)) {
 			console.log("Input is validated -> end before start")
 			validationResult = {
 				...validationResult, startDateAfterEndDate: true, isValid: false
