@@ -90,8 +90,10 @@ const CodeCardComponent = (props) => {
 						</InputGroupAddon>
 					</InputGroup>
 
-					<Button color="primary">Add</Button>
-					{/*this is to be done*/}
+					<Button
+						color="primary"
+						onClick={() => {props.onNewCodeButtonClicked()}}>Add
+					</Button>
 				</CardSubtitle>
 				<Table striped bordered>
 					<thead>

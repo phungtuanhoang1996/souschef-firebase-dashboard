@@ -11,6 +11,7 @@ import {
 import {styled} from 'styled-components';
 import {connect} from 'react-redux'
 import CodeModificationModal from './components/CodeModificationModal'
+import NewCodeModal from './components/NewCodeModal'
 
 const mapStateToProps = (state) => {
 	console.log('state is')
@@ -27,6 +28,8 @@ class OverviewComponent extends React.Component {
 		super(props)
 		this.state = {
 			event: 'ongoing',
+			newCodeModal: false,
+			newCodeModalDetails: null,
 			codeModificationModal: false,
 			codeModificationDetails: null
 		}
@@ -56,12 +59,19 @@ class OverviewComponent extends React.Component {
 						changeSelectedEvent={this.changeSelectedEvent}
 						codes={this.props.codes}
 						currentBrandId={this.props.currentBrandId}
-						onModifyButtonClicked={this.showCodeModificationModal}/>
+						onModifyButtonClicked={this.showCodeModificationModal}
+						onNewCodeButtonClicked={this.showNewCodeModal}
+					/>
 				</div>
 				<CodeModificationModal
 					isOpen={this.state.codeModificationModal}
-					toggle={this.toggle}
+					toggle={this.toggleCodeModificationModal}
 					details={this.state.codeModificationDetails}
+				/>
+				<NewCodeModal
+					isOpen={this.state.newCodeModal}
+					toggle={this.toggleNewCodeModal}
+					details={this.state.newCodeModalDetails}
 				/>
 			</div>
 		);
@@ -91,10 +101,28 @@ class OverviewComponent extends React.Component {
 		})
 	}
 
-	toggle = () => {
+	showNewCodeModal = () => {
+		var currentBrandId = this.props.currentBrandId
+		var eventType = this.state.event
+		this.setState({
+			newCodeModal: true,
+			newCodeModalDetails: {
+				currentBrandId,
+				eventType
+			}
+		})
+	}
+
+	toggleCodeModificationModal = () => {
 		this.setState({
 			codeModificationModal: !this.state.codeModificationModal,
 			codeModificationDetails: null
+		})
+	}
+
+	toggleNewCodeModal = () => {
+		this.setState({
+			newCodeModal: !this.state.newCodeModal,
 		})
 	}
 }

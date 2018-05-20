@@ -381,8 +381,7 @@ export default class CodeModificationModal extends React.Component {
 				invalidInputCollapse: true,
 				inputValidity: validationResult
 			})
-		}
-		else {
+		} else {
 			console.log("Save changes clicked, input is VALID")
 
 			// 2 cases here: QR code changed or unchanged
