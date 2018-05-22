@@ -53,7 +53,7 @@ class OverviewComponent extends React.Component {
 						</Row>
 					</Card>
 				</div>
-				<div class="codeCardComponent">
+				<div className="codeCardComponent">
 					<CodeCardComponent
 						selectedEvent={this.state.event}
 						changeSelectedEvent={this.changeSelectedEvent}

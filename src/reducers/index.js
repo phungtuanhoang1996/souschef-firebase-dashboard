@@ -2,13 +2,11 @@ import { combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
 import authToken from './authToken';
 import isLoggedIn from './isLoggedIn';
-import machines from './machines';
-import brands from './brands';
 import currentBrandName from './currentBrandName';
 import currentBrandId from './currentBrandId';
+import currentUserUid from './currentUserUid'
 import currentUser from './currentUser';
-import { firebaseReducer } from 'react-redux-firebase';
 
-const rootReducer = combineReducers({authToken, brands, currentBrandName, currentBrandId, currentUser, firebase : firebaseReducer, isLoggedIn, machines, routing: routerReducer});
+const rootReducer = combineReducers({authToken, currentBrandName, currentBrandId, currentUser, currentUserUid, isLoggedIn, routing: routerReducer});
 
 export default rootReducer;

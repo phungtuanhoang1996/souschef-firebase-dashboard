@@ -2,8 +2,7 @@ import React from 'react';
 import  LoginComponent  from '../components/LoginComponent';
 import {Button, Col, Modal, ModalBody, ModalFooter, ModalHeader} from 'reactstrap';
 import "./Home.css";
-import NavBarComponent from '../components/NavBarComponent';
-import Dasboard from './Dashboard';
+import firebase from 'firebase'
 var bcrypt = require('bcryptjs');
 
 export default class Home extends React.Component {
@@ -25,8 +24,9 @@ export default class Home extends React.Component {
                 })
             }
         } else {
-            this.props.firebase.auth().signInWithEmailAndPassword(username, password).then(result => {
-                this.props.login();
+            firebase.auth().signInWithEmailAndPassword(username, password).then(result => {
+                var user = firebase.auth().currentUser
+                this.props.login(username, user.uid, null, null);
                 this.props.history.push('/dashboard');
             }).catch(error => {
                 var errorCode = error.code;

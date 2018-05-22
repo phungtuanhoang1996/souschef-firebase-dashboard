@@ -3,8 +3,8 @@ import { Card, CardBody, Form, FormGroup, Label, Input, Button, Col } from 'reac
 
 export default class LoginComponent extends React.Component {
     state = {
-        email: "SGInnovate",
-        password: "SGInnovate2017"
+        email: "",
+        password: ""
     }
 
     emailHandler = (event) => {
@@ -38,7 +38,6 @@ export default class LoginComponent extends React.Component {
                     </CardBody>
                 </Card>
             </div>
-
         );
     }
 }
