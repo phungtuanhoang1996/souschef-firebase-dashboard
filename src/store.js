@@ -15,7 +15,9 @@ const defaultState = {
     currentUser: null,
     currentUserUid: null,
     currentBrandName: null,
-    currentBrandId: null
+    currentBrandId: null,
+    ongoingCodes: [],
+    offgoingCodes: []
 }
 
 const store = createStore(rootReducer, defaultState);

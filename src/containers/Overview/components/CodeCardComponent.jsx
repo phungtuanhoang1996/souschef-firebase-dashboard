@@ -48,34 +48,13 @@ const CodeCardComponent = (props) => {
 							{props.selectedEvent}
 						</DropdownToggle>
 						<DropdownMenu>
-							<DropdownItem header>Event</DropdownItem>
+							<DropdownItem onClick={(e) => {
+								props.changeSelectedEvent('ongoing')
+							}}>ongoing</DropdownItem>
 							<DropdownItem divider/>
-							{
-								Object.keys(props.codes).map((event, i) => {
-									if (i !== Object.keys(props.codes).length - 1) {
-										return (
-											<div key={i}>
-												<DropdownItem key={i} onClick={(e) => {
-													props.changeSelectedEvent(event)
-												}}>
-													{event}
-												</DropdownItem>
-												<DropdownItem divider/>
-											</div>
-										)
-									} else {
-										return (
-											<div key={i}>
-												<DropdownItem key={i} onClick={(e) => {
-													props.changeSelectedEvent(event)
-												}}>
-													{event}
-												</DropdownItem>
-											</div>
-										)
-									}
-								})
-							}
+							<DropdownItem onClick={(e) => {
+								props.changeSelectedEvent('offgoing')
+							}}>offgoing</DropdownItem>
 						</DropdownMenu>
 					</UncontrolledDropdown>
 
@@ -109,7 +88,7 @@ const CodeCardComponent = (props) => {
 					{
 						totalCodesCount != 0 ?
 							Object.keys(codesTypeToBeShown()).map((code) => {
-								return <tr>
+								return <tr key={code.toString()}>
 									<td style={styles.tableData}>
 										{code}
 									</td>

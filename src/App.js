@@ -6,7 +6,7 @@ import Home from './containers/Home'
 import { connect } from 'react-redux'
 import { bindActionCreators, compose } from 'redux';
 import * as actionCreators from './actions/actionCreators';
-import {history} from './store'
+import connectFirebase from './FirebaseUtils/connectFirebase'
 
 class App extends React.Component {
 	constructor(props) {
@@ -45,4 +45,4 @@ function mapDispatchToProps (dispatch){
 	return bindActionCreators(actionCreators, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(App)
+export default connectFirebase(connect(mapStateToProps, mapDispatchToProps)(App))
