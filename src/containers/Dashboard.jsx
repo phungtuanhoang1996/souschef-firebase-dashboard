@@ -1,11 +1,13 @@
 import React from 'react';
-import firebase  from '../firebase';
 import DrawerNavComponent from '../components/drawer/DrawerNavComponent';
 import OverviewComponent from '../containers/Overview/OverviewComponent';
-import { Col, Container, Row } from 'reactstrap';
 import './Dashboard.css';
+import {bindActionCreators} from "redux";
+import * as actionCreators from "../actions/actionCreators";
+import { connect } from 'react-redux'
+import { withRouter } from 'react-router-dom'
 
-export default class Dashboard extends React.Component {
+class Dashboard extends React.Component {
     state = {
         onlineMachines: {},
         offlineMachines: {},
@@ -82,4 +84,22 @@ export default class Dashboard extends React.Component {
         }
     }
 }
+
+function mapStateToProps (state) {
+	return {
+		isLoggedIn: state.isLoggedIn,
+		authToken: state.authToken,
+		currentUser: state.currentUser,
+		currentUserUid: state.currentUserUid,
+		currentBrandName: state.currentBrandName,
+		currentBrandId: state.currentBrandId
+	}
+}
+
+function mapDispatchToProps (dispatch){
+	return bindActionCreators(actionCreators, dispatch);
+}
+
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Dashboard))
 

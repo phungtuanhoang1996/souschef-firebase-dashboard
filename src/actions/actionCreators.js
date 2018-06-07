@@ -1,3 +1,5 @@
+import { routerActions } from 'react-router-redux'
+
 // Stores the authentication token delivered by Firebase Auth
 export function login(currentUser, currentUserUid, currentBrandId, currentBrandName) {
     return {

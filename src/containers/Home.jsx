@@ -3,9 +3,14 @@ import  LoginComponent  from '../components/LoginComponent';
 import {Button, Col, Modal, ModalBody, ModalFooter, ModalHeader} from 'reactstrap';
 import "./Home.css";
 import firebase from 'firebase'
+import {connect} from "react-redux";
+import {bindActionCreators} from "redux";
+import * as actionCreators from "../actions/actionCreators";
 var bcrypt = require('bcryptjs');
+import { withRouter } from 'react-router-dom'
 
-export default class Home extends React.Component {
+
+class Home extends React.Component {
     state = {
         errorPopup: false,
         errorMessage: ""
@@ -25,6 +30,8 @@ export default class Home extends React.Component {
             }
         } else {
             firebase.auth().signInWithEmailAndPassword(username, password).then(result => {
+                console.log("Firebase login result:")
+                console.log(result)
                 var user = firebase.auth().currentUser
                 this.props.login(username, user.uid, null, null);
                 this.props.history.push('/dashboard');
@@ -33,9 +40,8 @@ export default class Home extends React.Component {
                 var errorMessage = error.message;
                 this.setState({ 
                     errorPopup: true,
-                    errorMessage: "Invalid username/password."
+                    errorMessage: errorMessage
                 });
-                
             });
         }
     }
@@ -85,3 +91,21 @@ export default class Home extends React.Component {
         );
     }
 }
+
+function mapStateToProps (state) {
+	return {
+		isLoggedIn: state.isLoggedIn,
+		authToken: state.authToken,
+		currentUser: state.currentUser,
+		currentUserUid: state.currentUserUid,
+		currentBrandName: state.currentBrandName,
+		currentBrandId: state.currentBrandId
+	}
+}
+
+function mapDispatchToProps (dispatch) {
+	return bindActionCreators(actionCreators, dispatch);
+}
+
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Home))
