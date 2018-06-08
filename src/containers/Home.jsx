@@ -33,7 +33,7 @@ class Home extends React.Component {
                 console.log("Firebase login result:")
                 console.log(result)
                 var user = firebase.auth().currentUser
-                this.props.login(username, user.uid, null, null);
+                this.props.login(user.email, user.uid, null, null);
                 this.props.history.push('/dashboard');
             }).catch(error => {
                 var errorCode = error.code;

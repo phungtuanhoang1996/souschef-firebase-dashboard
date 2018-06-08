@@ -73,12 +73,10 @@ const rootReducer = (state, action) => {
 
 		case 'UPDATE_MACHINES_DATA': {
 			let machineId = action.machineId
-
 			let newState = Object.assign({}, state)
 
-			let newMachinesData = Object.assign({}, state.machineData)
+			let newMachinesData = Object.assign({}, state.machinesData)
 			newMachinesData[machineId] = action.machineData
-
 			newState.machinesData = newMachinesData
 
 			logger('Store after reduce', newState)

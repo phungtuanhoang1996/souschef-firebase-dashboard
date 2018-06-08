@@ -12,12 +12,14 @@ import {styled} from 'styled-components';
 import {connect} from 'react-redux'
 import CodeModificationModal from './components/CodeModificationModal'
 import NewCodeModal from './components/NewCodeModal'
+import logger from "../../Utils/logger";
 
 const mapStateToProps = (state) => {
 	return {
 		currentBrandId: state.currentBrandId,
 		ongoingCodes: state.ongoingCodes,
-		offgoingCodes: state.offgoingCodes
+		offgoingCodes: state.offgoingCodes,
+		machinesData: state.machinesData
 	}
 }
 
@@ -33,9 +35,25 @@ class OverviewComponent extends React.Component {
 		}
 	}
 
+	/*
+		returns object of online / offline machines from an object of mixed
+	 */
+	getMachines = (machinesObject, option) => {
+		let sortedMachines = {}
+
+		Object.keys(machinesObject).map(key => {
+			if (machinesObject[key]['online'] && option === 'online') {
+				sortedMachines[key] = machinesObject[key]
+			} else if (!machinesObject[key]['online'] && option === 'offline') {
+				sortedMachines[key] = machinesObject[key]
+			}
+		})
+
+		logger(option + 'sorted machines', sortedMachines)
+		return sortedMachines
+	}
+
 	render() {
-		console.log("Overview component re-rendered")
-		console.log(this.props)
 		return (
 			<div className="overviewWrapper">
 				<div className="machinesCardComponent">
@@ -43,10 +61,10 @@ class OverviewComponent extends React.Component {
 						<CardHeader>Machines</CardHeader>
 						<Row>
 							<Col sm="6">
-								<MachinesCardComponent title="Online" machines={this.props.onlineMachines}/>
+								<MachinesCardComponent title="Online" machines={this.getMachines(this.props.machinesData, 'online')}/>
 							</Col>
 							<Col sm="6">
-								<MachinesCardComponent title="Offline" machines={this.props.offlineMachines}/>
+								<MachinesCardComponent title="Offline" machines={this.getMachines(this.props.machinesData, 'offline')}/>
 							</Col>
 						</Row>
 					</Card>
