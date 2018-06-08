@@ -6,24 +6,27 @@ import {
 	CardHeader,
 	CardTitle,
 	CardSubtitle,
-	Col,
 	DropdownItem,
 	DropdownToggle,
 	DropdownMenu,
-	Row,
+	Modal,
+	ModalHeader,
 	Table,
 	UncontrolledDropdown,
 	InputGroup,
 	Input,
 	InputGroupAddon
 } from 'reactstrap';
+import QrReader from 'react-qr-reader'
+import logger from "../../../Utils/logger";
 
 export default class CodeCardComponent extends Component {
 	constructor(props) {
 		super(props)
 		this.state = {
 			selectedEvent: 'ongoing',
-			filterKeyword: ''
+			filterKeyword: '',
+			qrScanner: false
 		}
 	}
 
@@ -33,7 +36,7 @@ export default class CodeCardComponent extends Component {
 		else return {}
 	}
 
-	totalCodesCount = (!this.props.firebaseOffgoingCodes || !this.props.firebaseOngoingCodes) ? 0 : Object.keys(this.props.firebaseOngoingCodes).length + Object.keys(this.props.firebaseOffgoingCodes).length
+	totalCodesCount = () => (!this.props.firebaseOffgoingCodes || !this.props.firebaseOngoingCodes) ? 0 : Object.keys(this.props.firebaseOngoingCodes).length + Object.keys(this.props.firebaseOffgoingCodes).length
 
 	changeSelectedEvent = (event) => {
 		this.setState({
@@ -48,7 +51,7 @@ export default class CodeCardComponent extends Component {
 	}
 
 	filterCode = (codes, keyword) => {
-		if (keyword === '') return codes
+		if (keyword === '' || !keyword) return codes
 
 		var filteredCodes = {}
 
@@ -59,15 +62,47 @@ export default class CodeCardComponent extends Component {
 		return filteredCodes
 	}
 
+	toggleQR = () => {
+		this.setState({
+			qrScanner: !this.state.qrScanner
+		})
+	}
+
+	openQR = () => {
+		this.setState({
+			qrScanner: true
+		})
+	}
+
+	handleQrResult = (result) => {
+		if (result != null) {
+			this.setState({
+				filterKeyword: result,
+				qrScanner: false
+			})
+		}
+	}
+
 	render() {
+		logger('code card re rendered', this.state)
+		logger('code card props', this.props)
 		return (
 			<Card>
+				<Modal isOpen={this.state.qrScanner} toggle={this.toggleQR}>
+					<ModalHeader>QR code scanner</ModalHeader>
+					<QrReader
+						delay={500}
+						onError={(error) => {logger('QR error', error)}}
+						onScan={(result) => this.handleQrResult(result)}
+						style={{margin: '5px'}}
+					/>
+				</Modal>
 				<CardHeader>Event Codes</CardHeader>
 				<CardBody>
 					<CardTitle className="text-center">
 						Code Count: {' '}
 						{
-							this.totalCodesCount
+							this.totalCodesCount()
 						}
 					</CardTitle>
 					<CardSubtitle style={{marginBottom: '5px', display: "flex"}}>
@@ -95,9 +130,7 @@ export default class CodeCardComponent extends Component {
 							>
 							</Input>
 							<InputGroupAddon addonType='append'>
-								<Button onClick={() => {
-								}}>QR Scanner</Button>
-								{/*this is to be done*/}
+								<Button onClick={this.openQR}>QR Scanner</Button>
 							</InputGroupAddon>
 						</InputGroup>
 
@@ -120,7 +153,7 @@ export default class CodeCardComponent extends Component {
 						</thead>
 						<tbody>
 						{
-							this.totalCodesCount != 0 ?
+							this.totalCodesCount() != 0 ?
 								Object.keys(this.codesTypeTobeShown()).map((code) => {
 									return <tr key={code.toString()}>
 										<td style={styles.tableData}>
