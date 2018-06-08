@@ -71,8 +71,6 @@ class OverviewComponent extends React.Component {
 				</div>
 				<div className="codeCardComponent">
 					<CodeCardComponent
-						selectedEvent={this.state.event}
-						changeSelectedEvent={this.changeSelectedEvent}
 						firebaseOngoingCodes={this.props.ongoingCodes}
 						firebaseOffgoingCodes={this.props.offgoingCodes}
 						onModifyButtonClicked={this.showCodeModificationModal}
@@ -91,13 +89,6 @@ class OverviewComponent extends React.Component {
 				/>
 			</div>
 		);
-	}
-
-	changeSelectedEvent = (event) => {
-		console.log('changeSelectedEvent: clicked on ' + event)
-		this.setState({
-			event: event
-		})
 	}
 
 	showCodeModificationModal = (code, startDate, endDate, useCount) => {

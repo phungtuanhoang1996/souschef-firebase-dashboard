@@ -8,7 +8,7 @@ import {bindActionCreators} from "redux";
 import * as actionCreators from "../actions/actionCreators";
 var bcrypt = require('bcryptjs');
 import { withRouter } from 'react-router-dom'
-
+import logger from '../Utils/logger'
 
 class Home extends React.Component {
     state = {
@@ -33,12 +33,12 @@ class Home extends React.Component {
                 console.log("Firebase login result:")
                 console.log(result)
                 var user = firebase.auth().currentUser
-                this.props.login(user.email, user.uid, null, null);
+                this.props.login(result.email, user.uid, null, null);
                 this.props.history.push('/dashboard');
-            }).catch(error => {
-                var errorCode = error.code;
+            }, error => {
                 var errorMessage = error.message;
-                this.setState({ 
+                logger("Login error:", errorMessage)
+                this.setState({
                     errorPopup: true,
                     errorMessage: errorMessage
                 });
