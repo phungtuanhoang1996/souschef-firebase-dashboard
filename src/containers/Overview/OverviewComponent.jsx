@@ -14,12 +14,10 @@ import CodeModificationModal from './components/CodeModificationModal'
 import NewCodeModal from './components/NewCodeModal'
 
 const mapStateToProps = (state) => {
-	console.log('state is')
-	console.log(state)
-
 	return {
 		currentBrandId: state.currentBrandId,
-		firebase: state.firebase
+		ongoingCodes: state.ongoingCodes,
+		offgoingCodes: state.offgoingCodes
 	}
 }
 
@@ -57,8 +55,8 @@ class OverviewComponent extends React.Component {
 					<CodeCardComponent
 						selectedEvent={this.state.event}
 						changeSelectedEvent={this.changeSelectedEvent}
-						codes={this.props.codes}
-						currentBrandId={this.props.currentBrandId}
+						firebaseOngoingCodes={this.props.ongoingCodes}
+						firebaseOffgoingCodes={this.props.offgoingCodes}
 						onModifyButtonClicked={this.showCodeModificationModal}
 						onNewCodeButtonClicked={this.showNewCodeModal}
 					/>

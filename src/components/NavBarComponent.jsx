@@ -1,8 +1,15 @@
 import React, { Component } from 'react';
 import { Button, Nav, Navbar, NavbarBrand, NavItem, NavbarToggler, NavLink, Collapse } from 'reactstrap';
+import firebase from 'firebase'
+import logger from "../Utils/logger";
 
 export default class NavBarComponent extends Component {
     handleLogout = () => {
+        firebase.auth().signOut().then(success => {
+            logger('Logout success')
+        }, error => {
+            logger('Logout failed', error.message)
+        })
         this.props.logout();
     }
 

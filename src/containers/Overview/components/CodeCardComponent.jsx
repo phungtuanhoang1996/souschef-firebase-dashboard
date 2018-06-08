@@ -17,18 +17,14 @@ import {
 	Input,
 	InputGroupAddon
 } from 'reactstrap';
-import bindFirebaseBrand from '../../../FirebaseUtils/bindFirebaseBrand'
 
 const CodeCardComponent = (props) => {
-	console.log("code card old props")
-	console.log(props.codes)
-
 	const codesTypeToBeShown = () => {
-		if (props.selectedEvent === 'ongoing') return props.firebaseCodesOngoing
-		else if (props.selectedEvent === 'offgoing') return props.firebaseCodesOffgoing
+		if (props.selectedEvent === 'ongoing') return props.firebaseOngoingCodes
+		else if (props.selectedEvent === 'offgoing') return props.firebaseOffgoingCodes
 	}
 
-	var totalCodesCount = (!props.firebaseCodesOffgoing || !props.firebaseCodesOngoing) ? 0 : Object.keys(props.firebaseCodesOngoing).length + Object.keys(props.firebaseCodesOffgoing).length
+	var totalCodesCount = (!props.firebaseOffgoingCodes || !props.firebaseOngoingCodes) ? 0 : Object.keys(props.firebaseOngoingCodes).length + Object.keys(props.firebaseOffgoingCodes).length
 
 	return (
 		<Card>
@@ -36,8 +32,6 @@ const CodeCardComponent = (props) => {
 			<CardBody>
 				<CardTitle className="text-center">
 					Code Count: {' '}
-					{console.log(props.codes)}
-					{console.log(Object.keys(props.codes).length)}
 					{
 						totalCodesCount
 					}
@@ -138,4 +132,4 @@ const styles = {
 	}
 }
 
-export default bindFirebaseBrand(CodeCardComponent)
+export default CodeCardComponent

@@ -3,19 +3,21 @@ import firebase from 'firebase'
 import {connect} from 'react-redux'
 import {bindActionCreators} from "redux";
 import * as actionCreators from "../actions/actionCreators";
+import logger from "../Utils/logger";
 
 const connectFirebase = (WrappedComponent) => {
 	class FirebaseConnector extends Component {
 		constructor(props) {
 			super(props)
 			this.state = {
-				implementedListener: []
+				implementedListener: [], //this listener will only be turned off when the component un-mounts, i.e the app closes
 			}
 		}
 
 		componentDidMount() {
 			firebase.auth().onAuthStateChanged(user => {
-				if (user) {
+				if (user != null) {
+					logger('connectFirebase: onAuthStateChanged is fired', user)
 					this.props.login(user.displayName, user.uid)
 
 					var firebaseBrandRef = firebase.database().ref('users/' + user.uid + '/brand')
@@ -24,8 +26,8 @@ const connectFirebase = (WrappedComponent) => {
 						var brandId = Object.keys(snapshot.val())[0]
 						this.props.setCurrentBrandId(brandId)
 
-						var firebaseOngoingCodesRef = firebase.database().ref('/brands/' + this.props.currentBrandId + '/events/ongoing/codes/')
-						var firebaseOffgoingCodesRef = firebase.database().ref('/brands/' + this.props.currentBrandId + '/events/offgoing/codes/')
+						var firebaseOngoingCodesRef = firebase.database().ref('/brands/' + brandId + '/events/ongoing/codes/')
+						var firebaseOffgoingCodesRef = firebase.database().ref('/brands/' + brandId + '/events/offgoing/codes/')
 						this.addListener(firebaseOngoingCodesRef)
 						this.addListener(firebaseOffgoingCodesRef)
 
@@ -35,18 +37,46 @@ const connectFirebase = (WrappedComponent) => {
 						firebaseOffgoingCodesRef.on('value', snapshot => {
 							this.props.setOffgoingCodes(snapshot.val())
 						})
+
+						var firebaseAccessibleMachines = firebase.database().ref('/brands/' + brandId + '/machines')
+						this.addListener(firebaseAccessibleMachines)
+
+						firebaseAccessibleMachines.on('value', snapshot => {
+							Object.keys(snapshot.val()).map(machineId => {
+								let firebaseMachineRef = firebase.database().ref('/machines/' + machineId)
+								this.addListener(firebaseMachineRef)
+								firebaseMachineRef.on('value', snapshot => {
+									logger("Iterating through accessible machines ", machineId)
+									this.props.updateMachinesData(machineId, snapshot.val())
+								})
+							})
+						})
 					})
 
 				} else {
 					this.props.logout()
+					logger("connectFirebase: number of implemented listener: ", this.state.implementedListener.length)
+					for (let i = 0; i < this.state.implementedListener.length; i++) {
+						logger('Iterating through implemented listener', this.state.implementedListener[i])
+						this.state.implementedListener[i].off()
+					}
+					this.setState({
+						implementedListener: []
+					})
 				}
 			})
 		}
 
 		componentWillUnmount() {
-			for (let listener in this.state.implementedListener) {
-				listener.off()
+			this.props.logout()
+			logger("connectFirebase: number of implemented listener: ", this.state.implementedListener.length)
+			for (let i = 0; i < this.state.implementedListener.length; i++) {
+				logger('Iterating through implemented listener', this.state.implementedListener[i])
+				this.state.implementedListener[i].off()
 			}
+			this.setState({
+				implementedListener: []
+			})
 		}
 
 		render() {
