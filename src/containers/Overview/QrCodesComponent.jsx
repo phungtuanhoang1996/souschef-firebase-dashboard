@@ -5,14 +5,15 @@ import './QrCodesComponent.css';
 import {
 	Card,
 	CardHeader,
-	Col,
-	Row
+	CardBody,
+	Button
 } from 'reactstrap';
 import {styled} from 'styled-components';
 import {connect} from 'react-redux'
 import CodeModificationModal from './components/CodeModificationModal'
 import NewCodeModal from './components/NewCodeModal'
 import logger from "../../Utils/logger";
+import ImportCsvModal from "./components/ImportCsvModal";
 
 const mapStateToProps = (state) => {
 	return {
@@ -31,7 +32,8 @@ class QrCodesComponent extends React.Component {
 			newCodeModal: false,
 			newCodeModalDetails: null,
 			codeModificationModal: false,
-			codeModificationDetails: null
+			codeModificationDetails: null,
+			importCsvModal: false
 		}
 	}
 
@@ -95,6 +97,18 @@ class QrCodesComponent extends React.Component {
 		})
 	}
 
+	showImportCsvModal = () => {
+		this.setState({
+			importCsvModal: true
+		})
+	}
+
+	toggleImportCsvModal = () => {
+		this.setState({
+			importCsvModal: !this.state.importCsvModal
+		})
+	}
+
 	render() {
 		return (
 			<div className="qrCodesWrapper">
@@ -106,6 +120,14 @@ class QrCodesComponent extends React.Component {
 						onNewCodeButtonClicked={this.showNewCodeModal}
 					/>
 				</div>
+				<Card className="bulkImportCard">
+					<CardHeader>Bulk Import</CardHeader>
+					<div style={{display: 'flex', padding: '5px'}}>
+						<CardBody>Import multiple codes with .CSV or .XLS/.XLSX</CardBody>
+						<Button color="primary" style={{margin: '5px'}} onClick={this.showImportCsvModal}>Import using .CSV</Button>
+						<Button color="primary" style={{margin: '5px'}}>Import using .XLSX</Button>
+					</div>
+				</Card>
 				<CodeModificationModal
 					isOpen={this.state.codeModificationModal}
 					toggle={this.toggleCodeModificationModal}
@@ -115,6 +137,11 @@ class QrCodesComponent extends React.Component {
 					isOpen={this.state.newCodeModal}
 					toggle={this.toggleNewCodeModal}
 					details={this.state.newCodeModalDetails}
+				/>
+				<ImportCsvModal
+					isOpen={this.state.importCsvModal}
+					toggle={this.toggleImportCsvModal}
+					currentBrandId={this.props.currentBrandId}
 				/>
 			</div>
 		)
