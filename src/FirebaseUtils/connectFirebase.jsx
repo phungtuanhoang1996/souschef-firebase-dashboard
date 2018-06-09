@@ -18,7 +18,7 @@ const connectFirebase = (WrappedComponent) => {
 			firebase.auth().onAuthStateChanged(user => {
 				if (user != null) {
 					logger('connectFirebase: onAuthStateChanged is fired', user)
-					this.props.login(user.displayName, user.uid)
+					this.props.login(user.email, user.uid)
 
 					var firebaseBrandRef = firebase.database().ref('users/' + user.uid + '/brand')
 					this.addListener(firebaseBrandRef)

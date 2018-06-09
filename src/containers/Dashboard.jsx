@@ -7,6 +7,7 @@ import * as actionCreators from "../actions/actionCreators";
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import logger from "../Utils/logger";
+import QrCodesComponent from "./Overview/QrCodesComponent";
 
 class Dashboard extends React.Component {
     constructor(props) {
@@ -20,7 +21,7 @@ class Dashboard extends React.Component {
         switch (selectedItem) {
             case 'overview': return (<OverviewComponent/>)
             case 'machines': return null //this needs to be done
-            case 'codes': return null //this needs to be done
+            case 'codes': return (<QrCodesComponent/>) //this needs to be done
         }
     }
 

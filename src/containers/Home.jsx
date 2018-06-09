@@ -20,7 +20,7 @@ class Home extends React.Component {
         if (!this.validateEmail(username)) {
             const currentUserObject = this.validateFirebaseUser(username, password);
             if (currentUserObject != false) {
-                this.props.login(username, currentUserObject.brand, this.props.brands[currentUserObject.brand].name);
+	            this.props.login(result.email, user.uid, null, null);
                 this.props.history.push('/dashboard');
             } else {
                 this.setState({
@@ -89,6 +89,12 @@ class Home extends React.Component {
             </div>
 
         );
+    }
+
+    componentDidMount() {
+        if (this.props.isLoggedIn) {
+	        this.props.history.push('/dashboard');
+        }
     }
 }
 

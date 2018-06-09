@@ -84,8 +84,6 @@ export default class CodeCardComponent extends Component {
 	}
 
 	render() {
-		logger('code card re rendered', this.state)
-		logger('code card props', this.props)
 		return (
 			<Card>
 				<Modal isOpen={this.state.qrScanner} toggle={this.toggleQR}>
