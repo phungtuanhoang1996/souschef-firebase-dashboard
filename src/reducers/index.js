@@ -83,6 +83,18 @@ const rootReducer = (state, action) => {
 			return newState
 		}
 
+		case 'SET_CURRENT_BRAND_NAME': {
+			logger('Store after reduce:', {
+				...state,
+				currentBrandName: action.currentBrandName
+			})
+
+			return {
+				...state,
+				currentBrandName: action.currentBrandName
+			}
+		}
+
 		default:
 			return defaultState
 	}

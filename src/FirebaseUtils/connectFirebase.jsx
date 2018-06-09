@@ -26,6 +26,13 @@ const connectFirebase = (WrappedComponent) => {
 						var brandId = Object.keys(snapshot.val())[0]
 						this.props.setCurrentBrandId(brandId)
 
+						var firebaseBrandName = firebase.database().ref('/brands/' + brandId + '/name')
+						this.addListener(firebaseBrandName)
+						firebaseBrandName.on('value', snapshot => {
+							logger("Brand name from firebase: ", snapshot)
+							this.props.setCurrentBrandName(snapshot.val())
+						})
+
 						var firebaseOngoingCodesRef = firebase.database().ref('/brands/' + brandId + '/events/ongoing/codes/')
 						var firebaseOffgoingCodesRef = firebase.database().ref('/brands/' + brandId + '/events/offgoing/codes/')
 						this.addListener(firebaseOngoingCodesRef)

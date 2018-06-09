@@ -55,3 +55,12 @@ export const updateMachinesData = (machineId, machineData) => {
 		machineData: machineData
 	}
 }
+
+export const setCurrentBrandName = (brandName) => {
+	logger('A set current brand name action is created')
+
+	return {
+		type: 'SET_CURRENT_BRAND_NAME',
+		currentBrandName: brandName
+	}
+}

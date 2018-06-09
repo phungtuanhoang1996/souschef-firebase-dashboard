@@ -6,54 +6,40 @@ import {bindActionCreators} from "redux";
 import * as actionCreators from "../actions/actionCreators";
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
+import logger from "../Utils/logger";
 
 class Dashboard extends React.Component {
-    state = {
-        onlineMachines: {},
-        offlineMachines: {},
-        eventCodes: {},
-        selectedEvent: ""
-    }
-
-    countMachines = () => {
-        var onlineMachines = {}
-        var offlineMachines = {}
-        for (var machine in this.props.machines[this.props.currentBrandName]) {
-            if (this.props.machines[this.props.currentBrandName][machine].online) {
-                onlineMachines[machine] = this.props.machines[this.props.currentBrandName][machine];
-            } else {
-                offlineMachines[machine] = this.props.machines[this.props.currentBrandName][machine];
-            }
+    constructor(props) {
+        super(props)
+        this.state = {
+            selectedItem: 'overview'
         }
-        this.setState({
-            onlineMachines: onlineMachines,
-            offlineMachines: offlineMachines
-        })
     }
 
-    changeSelectedEvent = (event) => {
+    componentToDisplay = (selectedItem) => {
+        switch (selectedItem) {
+            case 'overview': return (<OverviewComponent/>)
+            case 'machines': return null //this needs to be done
+            case 'codes': return null //this needs to be done
+        }
+    }
+
+    onItemSelect = (selectedItem) => {
         this.setState({
-            selectedEvent: event
+            selectedItem: selectedItem
         })
     }
 
     render() {
-
-        if (this.props.machines != null) {
-        }
         return (
             <div className="wrapper">
                 <div className="sidebar">
-                    <DrawerNavComponent currentUser={this.props.currentUser} currentBrandName={this.props.currentBrandName}/>
+                    <DrawerNavComponent currentUser={this.props.currentUser} currentBrandName={this.props.currentBrandName}
+                        onItemSelect={this.onItemSelect} selectedItem={this.state.selectedItem}
+                    />
                 </div>
                 <div className="main">
-                    <OverviewComponent 
-                        onlineMachines={this.state.onlineMachines} 
-                        offlineMachines={this.state.offlineMachines}
-                        codes={this.state.eventCodes} 
-                        selectedEvent={this.state.selectedEvent}
-                        changeSelectedEvent={this.changeSelectedEvent}
-                        />
+                    {this.componentToDisplay(this.state.selectedItem)}
                 </div>
             </div>
         );
@@ -69,18 +55,6 @@ class Dashboard extends React.Component {
     componentDidUpdate = () => {
         if (!this.props.isLoggedIn) {
             this.props.history.push('/');
-        }
-    }
-    
-    componentWillReceiveProps(){
-        if (this.props.machines != null) {
-            this.countMachines();
-        }
-        if (this.props.brands != null) {
-            this.setState({
-                eventCodes: this.props.brands[this.props.currentBrandId].events,
-                selectedEvent: Object.keys(this.props.brands[this.props.currentBrandId].events)[0]
-            })
         }
     }
 }
