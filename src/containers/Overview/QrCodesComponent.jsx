@@ -14,6 +14,7 @@ import CodeModificationModal from './components/CodeModificationModal'
 import NewCodeModal from './components/NewCodeModal'
 import logger from "../../Utils/logger";
 import ImportCsvModal from "./components/ImportCsvModal";
+import ImportXlsxModal from "./components/ImportXlsxModal"
 
 const mapStateToProps = (state) => {
 	return {
@@ -33,7 +34,8 @@ class QrCodesComponent extends React.Component {
 			newCodeModalDetails: null,
 			codeModificationModal: false,
 			codeModificationDetails: null,
-			importCsvModal: false
+			importCsvModal: false,
+			importXlsxModal: false
 		}
 	}
 
@@ -109,6 +111,19 @@ class QrCodesComponent extends React.Component {
 		})
 	}
 
+	showImportXlsxModal = () => {
+		this.setState({
+			importXlsxModal: true
+		})
+	}
+
+	toggleImportXlsxModal = () => {
+		this.setState({
+			importXlsxModal: !this.state.importXlsxModal
+		})
+	}
+
+
 	render() {
 		return (
 			<div className="qrCodesWrapper">
@@ -123,9 +138,9 @@ class QrCodesComponent extends React.Component {
 				<Card className="bulkImportCard">
 					<CardHeader>Bulk Import</CardHeader>
 					<div style={{display: 'flex', padding: '5px'}}>
-						<CardBody>Import multiple codes with .CSV or .XLS/.XLSX</CardBody>
-						<Button color="primary" style={{margin: '5px'}} onClick={this.showImportCsvModal}>Import using .CSV</Button>
-						<Button color="primary" style={{margin: '5px'}}>Import using .XLSX</Button>
+						<CardBody>Import multiple codes from .CSV or .XLS/.XLSX</CardBody>
+						<Button color="primary" style={{margin: '5px'}} onClick={this.showImportCsvModal}>Import from .CSV</Button>
+						<Button color="primary" style={{margin: '5px'}} onClick={this.showImportXlsxModal}>Import from .XLSX</Button>
 					</div>
 				</Card>
 				<CodeModificationModal
@@ -141,6 +156,11 @@ class QrCodesComponent extends React.Component {
 				<ImportCsvModal
 					isOpen={this.state.importCsvModal}
 					toggle={this.toggleImportCsvModal}
+					currentBrandId={this.props.currentBrandId}
+				/>
+				<ImportXlsxModal
+					isOpen={this.state.importXlsxModal}
+					toggle={this.toggleImportXlsxModal}
 					currentBrandId={this.props.currentBrandId}
 				/>
 			</div>

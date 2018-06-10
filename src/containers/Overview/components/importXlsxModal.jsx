@@ -15,8 +15,9 @@ import React from 'react'
 import Dropzone from 'react-dropzone'
 import logger from '../../../Utils/logger'
 import Papa from 'papaparse'
+import XLSX from 'xlsx'
 
-export default class ImportCsvModal extends React.Component {
+export default class ImportXlsxModal extends React.Component {
 	numberOfStages = 3
 
 	constructor(props) {
@@ -41,14 +42,14 @@ export default class ImportCsvModal extends React.Component {
 	next = () => {
 		this.setState({
 			currentStage: this.state.currentStage < this.numberOfStages - 1
-						? this.state.currentStage + 1 : this.state.currentStage
+				? this.state.currentStage + 1 : this.state.currentStage
 		})
 	}
 
 	previous = () => {
 		this.setState({
 			currentStage: this.state.currentStage > 0
-						? this.state.currentStage - 1 : this.state.currentStage
+				? this.state.currentStage - 1 : this.state.currentStage
 		})
 	}
 
@@ -70,7 +71,7 @@ export default class ImportCsvModal extends React.Component {
 			case 1: {
 				return (
 					<div>
-						<p>Drag the CSV file below or click to choose file to upload</p>
+						<p>Drag the XLS / XLSX file below or click to choose file to upload</p>
 						<Dropzone onDrop={this.onDrop}/>
 						<p>Uploaded file: {this.state.uploadedFile === null ? 'None' : this.state.uploadedFile.name}</p>
 					</div>
@@ -84,7 +85,7 @@ export default class ImportCsvModal extends React.Component {
 								? <Progress animated value={100} style={{width: "33%"}}/>
 								: <Progress striped color="success" value={100} style={{width: "33%"}}/>
 							}
-							</div>
+						</div>
 						<div style={{display: 'flex', alignItems: "center", justifyContent: "center"}}>
 							{this.state.status === '' ? <p>Parsing...</p> : null}
 							{this.state.status === 'upload_firebase' ? <p>Uploading...</p> : null}
@@ -114,42 +115,50 @@ export default class ImportCsvModal extends React.Component {
 	}
 
 	parseAndUpload = () => {
-		Papa.parse(this.state.uploadedFile, {
-			complete: results => {
-				this.setState({
-					status: 'upload_firebase'
-				})
+		var reader = new FileReader()
 
-				logger("papaparse results", results)
-
-				let firebaseUploadData = {}
-
-				Object.keys(results.data).map(key => {
-					let code = results.data[key][0]
-					let startDate = results.data[key][1]
-					let endDate = results.data[key][2]
-					let useCount = parseInt(results.data[key][3])
-					firebaseUploadData[code] = {
-						start_date: startDate,
-						end_date: endDate,
-						use_count: useCount
-					}
-				})
-
-				logger('firebase data upload object', firebaseUploadData)
-
-				firebase.database().ref('/brands/' + this.props.currentBrandId + '/events/ongoing/codes').update(
-					firebaseUploadData
-				).then(success => {
+		reader.onload = (e) => {
+			var workbook = XLSX.read(reader.result, {type: 'array'})
+			logger('csv', XLSX.utils.sheet_to_csv(workbook.Sheets['codes']))
+			Papa.parse(XLSX.utils.sheet_to_csv(workbook.Sheets['codes']), {
+				complete: results => {
 					this.setState({
-						status: 'done'
+						status: 'upload_firebase'
 					})
-					logger('parsed and uploaded to firebase')
-				}, error => {
-					logger('failed to parse and upload to firebase', error.message)
-				})
-			}
-		})
+
+					logger("papaparse results", results)
+
+					let firebaseUploadData = {}
+
+					Object.keys(results.data).map(key => {
+						let code = results.data[key][0]
+						let startDate = results.data[key][1]
+						let endDate = results.data[key][2]
+						let useCount = parseInt(results.data[key][3])
+						firebaseUploadData[code] = {
+							start_date: startDate,
+							end_date: endDate,
+							use_count: useCount
+						}
+					})
+
+					logger('firebase data upload object', firebaseUploadData)
+
+					firebase.database().ref('/brands/' + this.props.currentBrandId + '/events/ongoing/codes').update(
+						firebaseUploadData
+					).then(success => {
+						this.setState({
+							status: 'done'
+						})
+						logger('parsed and uploaded to firebase')
+					}, error => {
+						logger('failed to parse and upload to firebase', error.message)
+					})
+				}
+			})
+		}
+
+		reader.readAsArrayBuffer(this.state.uploadedFile)
 	}
 
 	getNextButton = () =>{
