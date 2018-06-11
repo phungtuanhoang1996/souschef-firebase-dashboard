@@ -1,39 +1,40 @@
 import React from 'react';
-import { Card, CardBody, CardHeader, CardSubtitle, ListGroup, ListGroupItem, Table } from 'reactstrap';
+import { Card, CardBody, CardHeader, CardSubtitle, ListGroup, ListGroupItem } from 'reactstrap';
+import { Segment, Table } from 'semantic-ui-react'
 import {styled} from 'styled-components';
 
 const MachinesCardComponent = (props) => {
+	let machinesCount = Object.keys(props.machines).length
+
     return (
-        <Card>
-            <CardHeader>{props.title}</CardHeader>
-            <CardBody>
-                {
-                    Object.keys(props.machines).length != 0 ? 
-                    <div>
-                        <CardSubtitle>{Object.keys(props.machines).length} machines are currently {props.title.toString().toLowerCase()}</CardSubtitle>
-                        <Table striped>
-                            <thead>
-                                <tr>
-                                    <th>Machine Name</th>
-                                    <th>Last Online</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            {
-                                Object.keys(props.machines).map((machine, key) => {
-                                    return <tr key={key}>
-                                        <td  key={machine}>{machine}</td>
-                                        <td  key={props.machines[machine].last_online}>{props.machines[machine].last_online}</td>
-                                    </tr>
-                                })
-                            }
-                            </tbody>
-                        </Table>
-                    </div> : 
-                        <CardSubtitle>No machines are currently {props.title.toString().toLowerCase()}</CardSubtitle>
+        <div style={{flex: '1', paddingLeft: '20px', paddingRight: '20px'}}>
+            <Segment textAlign='center' style={{
+                margin: '0px', marginTop: '0px', marginBottom: '0px',
+                backgroundColor: props.title === 'online' ? '#23BB9A' : '#E27676'
+            }}>
+                <h3 style={{color: 'white'}}>{machinesCount} machine{machinesCount >= 2 ? 's are ' : ' is '} {props.title}</h3>
+            </Segment>
+
+	        <Table celled striped style={{marginTop: '5px'}}>
+		        <Table.Header>
+			        <Table.HeaderCell textAlign='center' style={{width: '33%'}}>Name</Table.HeaderCell>
+			        <Table.HeaderCell textAlign='center' style={{width: '67%'}}>Last Updated</Table.HeaderCell>
+                </Table.Header>
+
+                <Table.Body>
+                    {
+                        Object.keys(props.machines).map((machine, key) => {
+	                        return (
+	                            <Table.Row>
+                                    <Table.Cell textAlign='center'>{machine}</Table.Cell>
+                                    <Table.Cell textAlign='center'>{props.machines[machine].last_online}</Table.Cell>
+                                </Table.Row>
+                            )
+                        })
                     }
-            </CardBody>
-        </Card>
+                </Table.Body>
+            </Table>
+        </div>
     );
 }
 

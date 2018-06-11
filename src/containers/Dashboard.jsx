@@ -13,7 +13,7 @@ class Dashboard extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            selectedItem: 'codes'
+            selectedItem: 'overview'
         }
     }
 
@@ -33,7 +33,7 @@ class Dashboard extends React.Component {
 
     render() {
         return (
-            <div className="wrapper" style={{display: 'flex', width: '100%', height: '100%'}}>
+            <div className="wrapper" style={{backgroundColor: '#EAEEF2', display: 'flex', width: '100%', height: '100%'}}>
                     <DrawerNavComponent
                         currentUser={this.props.currentUser}
                         currentBrandName={this.props.currentBrandName}
@@ -42,7 +42,7 @@ class Dashboard extends React.Component {
                         logout={this.props.logout}
                     />
 
-                    <div style={{width: '85%', height: '100%'}}>
+                    <div style={{width: '85vw', height: '100vh'}}>
                         <div className="main">
                             {this.componentToDisplay(this.state.selectedItem)}
                         </div>

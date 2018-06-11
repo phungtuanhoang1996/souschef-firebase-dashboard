@@ -13,6 +13,7 @@ import {connect} from 'react-redux'
 import CodeModificationModal from './components/CodeModificationModal'
 import NewCodeModal from './components/NewCodeModal'
 import logger from "../../Utils/logger";
+import { Segment } from 'semantic-ui-react'
 
 const mapStateToProps = (state) => {
 	return {
@@ -56,20 +57,43 @@ class OverviewComponent extends React.Component {
 	render() {
 		return (
 			<div className="overviewWrapper">
-				<div className="machinesCardComponent">
-					<Card>
-						<CardHeader>Machines</CardHeader>
-						<Row>
-							<Col sm="6">
-								<MachinesCardComponent title="Online" machines={this.getMachines(this.props.machinesData, 'online')}/>
-							</Col>
-							<Col sm="6">
-								<MachinesCardComponent title="Offline" machines={this.getMachines(this.props.machinesData, 'offline')}/>
-							</Col>
-						</Row>
-					</Card>
-				</div>
-				<div className="codeCardComponent">
+				<Segment raised style={{
+					height: '40vh',
+					margin: '10px',
+					padding: '0px',
+					display: 'flex',
+					flexDirection: 'column'
+				}}>
+					<h2 style={{padding: '10px', paddingLeft: '20px', margin: '0px'}}>Machines Status</h2>
+					<div style={{
+						flex: '1',
+						margin: '0px',
+						display: 'flex'
+					}}>
+						<div style={{
+							flex: '1', display: 'flex'
+						}}>
+							<MachinesCardComponent title="online" machines={this.getMachines(this.props.machinesData, 'online')}/>
+						</div>
+						<div style={{
+							flex: '1'
+						}}>
+							<MachinesCardComponent title="offline" machines={this.getMachines(this.props.machinesData, 'offline')}/>
+						</div>
+						{/*<Card>*/}
+							{/*<CardHeader>Machines</CardHeader>*/}
+							{/*<Row>*/}
+								{/*<Col sm="6">*/}
+									{/*<MachinesCardComponent title="Online" machines={this.getMachines(this.props.machinesData, 'online')}/>*/}
+								{/*</Col>*/}
+								{/*<Col sm="6">*/}
+									{/*<MachinesCardComponent title="Offline" machines={this.getMachines(this.props.machinesData, 'offline')}/>*/}
+								{/*</Col>*/}
+							{/*</Row>*/}
+						{/*</Card>*/}
+					</div>
+				</Segment>
+				<div style={{height: '60vh'}} className="codeCardComponent">
 					<CodeCardComponent
 						firebaseOngoingCodes={this.props.ongoingCodes}
 						firebaseOffgoingCodes={this.props.offgoingCodes}
