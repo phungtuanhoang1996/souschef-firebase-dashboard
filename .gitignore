@@ -22,3 +22,6 @@ chrome-user-data
 .vscode
 *.swp
 *.swo
+.firebaserc
+database.rules.json
+firebase.json

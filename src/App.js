@@ -1,7 +1,6 @@
 import React from 'react'
 import { BrowserRouter, Route } from 'react-router-dom';
 import Dashboard from './containers/Dashboard';
-import NavBarComponent from './components/NavBarComponent';
 import Home from './containers/Home'
 import { connect } from 'react-redux'
 import { bindActionCreators, compose } from 'redux';
@@ -17,7 +16,6 @@ class App extends React.Component {
 		return (
 			<BrowserRouter>
 				<div>
-					<NavBarComponent isLoggedIn={this.props.isLoggedIn} logout={this.props.logout}/>
 					<Route path="/" exact component={() => {
 						return (<Home {...this.props}/>)
 					}} />

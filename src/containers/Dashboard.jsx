@@ -1,13 +1,13 @@
 import React from 'react';
 import DrawerNavComponent from '../components/drawer/DrawerNavComponent';
 import OverviewComponent from '../containers/Overview/OverviewComponent';
-import './Dashboard.css';
 import {bindActionCreators} from "redux";
 import * as actionCreators from "../actions/actionCreators";
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import logger from "../Utils/logger";
 import QrCodesComponent from "./Overview/QrCodesComponent";
+import { Sidebar, Segment } from 'semantic-ui-react'
 
 class Dashboard extends React.Component {
     constructor(props) {
@@ -33,15 +33,20 @@ class Dashboard extends React.Component {
 
     render() {
         return (
-            <div className="wrapper">
-                <div className="sidebar">
-                    <DrawerNavComponent currentUser={this.props.currentUser} currentBrandName={this.props.currentBrandName}
-                        onItemSelect={this.onItemSelect} selectedItem={this.state.selectedItem}
+            <div className="wrapper" style={{display: 'flex', width: '100%', height: '100%'}}>
+                    <DrawerNavComponent
+                        currentUser={this.props.currentUser}
+                        currentBrandName={this.props.currentBrandName}
+                        onItemSelect={this.onItemSelect}
+                        selectedItem={this.state.selectedItem}
+                        logout={this.props.logout}
                     />
-                </div>
-                <div className="main">
-                    {this.componentToDisplay(this.state.selectedItem)}
-                </div>
+
+                    <div style={{width: '85%', height: '100%'}}>
+                        <div className="main">
+                            {this.componentToDisplay(this.state.selectedItem)}
+                        </div>
+                    </div>
             </div>
         );
     }
