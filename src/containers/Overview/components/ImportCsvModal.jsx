@@ -15,6 +15,7 @@ import React from 'react'
 import Dropzone from 'react-dropzone'
 import logger from '../../../Utils/logger'
 import Papa from 'papaparse'
+import moment from "moment";
 
 export default class ImportCsvModal extends React.Component {
 	numberOfStages = 3
@@ -29,12 +30,14 @@ export default class ImportCsvModal extends React.Component {
 	}
 
 	componentWillReceiveProps = (nextProps) => {
-		if (this.props.isOpen || !nextProps.isOpen) {
-			this.setState({
-				currentStage: 0,
-				uploadedFile: null,
-				status: ''
-			})
+		if (this.props.isOpen && !nextProps.isOpen) {
+			setTimeout(() => {
+				this.setState({
+					currentStage: 0,
+					uploadedFile: null,
+					status: ''
+				})
+			}, 1000)
 		}
 	}
 
@@ -71,7 +74,7 @@ export default class ImportCsvModal extends React.Component {
 				return (
 					<div>
 						<p>Drag the CSV file below or click to choose file to upload</p>
-						<Dropzone onDrop={this.onDrop}/>
+						<Dropzone accept=".csv" multiple={false} onDrop={this.onDrop}/>
 						<p>Uploaded file: {this.state.uploadedFile === null ? 'None' : this.state.uploadedFile.name}</p>
 					</div>
 				)
@@ -80,24 +83,43 @@ export default class ImportCsvModal extends React.Component {
 				return (
 					<div>
 						<div style={{display: 'flex', alignItems: "center", justifyContent: "center"}}>
-							{this.state.status !== 'done'
+							{!this.state.status.includes('done')
 								? <Progress animated value={100} style={{width: "33%"}}/>
-								: <Progress striped color="success" value={100} style={{width: "33%"}}/>
+								: null
+							}
+							{this.state.status === 'done'
+								? <Progress striped color="success" value={100} style={{width: "33%"}}/>
+								: null
+							}
+							{this.state.status === 'done with error'
+								? <Progress striped color="warning" value={100} style={{width: "33%"}}/>
+								: null
 							}
 							</div>
 						<div style={{display: 'flex', alignItems: "center", justifyContent: "center"}}>
 							{this.state.status === '' ? <p>Parsing...</p> : null}
 							{this.state.status === 'upload_firebase' ? <p>Uploading...</p> : null}
 							{this.state.status === 'done' ? <p>Done!</p> : null}
+							{this.state.status === 'done with error' ? <p>Done with errors</p>: null}
 						</div>
-						{ (this.state.status === 'upload_firebase' || this.state.status === 'done') ?
+						{ (this.state.status === 'upload_firebase' || this.state.status.includes('done')) ?
 							<div style={{display: 'flex', alignItems: "center", justifyContent: "center"}}>
 								<p>Parsed CSV file</p>
 							</div> : null
 						}
 						{ (this.state.status === 'done') ?
 							<div style={{display: 'flex', alignItems: "center", justifyContent: "center"}}>
-								<p>Uploaded to database</p>
+								<p>Uploaded all codes to database</p>
+							</div> : null
+						}
+						{ (this.state.status === 'done with error') ?
+							<div>
+								<div style={{display: 'flex', alignItems: "center", justifyContent: "center"}}>
+									<p>Uploaded {this.state.validRows} code(s) to database</p>
+								</div>
+								<div style={{display: 'flex', alignItems: "center", justifyContent: "center"}}>
+									<p>{this.state.invalidRows} row(s) from .CSV file were invalid</p>
+								</div>
 							</div> : null
 						}
 					</div>
@@ -107,10 +129,12 @@ export default class ImportCsvModal extends React.Component {
 	}
 
 	onDrop = (acceptedFiles, rejectedFiles) => {
-		logger('Dropzone', acceptedFiles)
-		this.setState({
-			uploadedFile: acceptedFiles[0]
-		})
+		logger('Dropzone', acceptedFiles[0])
+		if (acceptedFiles[0] && acceptedFiles[0] !== null) {
+			this.setState({
+				uploadedFile: acceptedFiles[0]
+			})
+		}
 	}
 
 	parseAndUpload = () => {
@@ -124,25 +148,40 @@ export default class ImportCsvModal extends React.Component {
 
 				let firebaseUploadData = {}
 
+				var validRows = 0
+				var invalidRows = 0
+
 				Object.keys(results.data).map(key => {
 					let code = results.data[key][0]
 					let startDate = results.data[key][1]
 					let endDate = results.data[key][2]
 					let useCount = parseInt(results.data[key][3])
-					firebaseUploadData[code] = {
-						start_date: startDate,
-						end_date: endDate,
-						use_count: useCount
+
+					var validationResult = this.validateInput(code, startDate, endDate, useCount)
+
+					if (validationResult.isValid) {
+						firebaseUploadData[code] = {
+							start_date: startDate,
+							end_date: endDate,
+							use_count: useCount
+						}
+						validRows++
+					} else {
+						invalidRows++
 					}
 				})
 
 				logger('firebase data upload object', firebaseUploadData)
+				logger('valid rows: ' + validRows)
+				logger('invalid rows: ' + invalidRows)
 
 				firebase.database().ref('/brands/' + this.props.currentBrandId + '/events/ongoing/codes').update(
 					firebaseUploadData
 				).then(success => {
 					this.setState({
-						status: 'done'
+						status: (invalidRows === 0) ? 'done' : 'done with error',
+						validRows: validRows,
+						invalidRows: invalidRows
 					})
 					logger('parsed and uploaded to firebase')
 				}, error => {
@@ -198,10 +237,64 @@ export default class ImportCsvModal extends React.Component {
 		}
 	}
 
+	validateInput = (code, _startDate, _endDate, useCount) => {
+		//initial state check
+		var validationResult = {
+			isValid: true
+		}
+
+		if (!code || !_startDate || !_endDate || !useCount) {
+			console.log("Input is validated -> uninitialized")
+			validationResult = {
+				...validationResult, missingFields: true, isValid: false
+			}
+			return validationResult
+		}
+
+		//check start/end date format
+		//check end date is after start date
+		var startDate = moment(_startDate, "DD/MM/YYYY")
+		var endDate = moment(_endDate, "DD/MM/YYYY")
+
+		if (!startDate.isValid() || !endDate.isValid()) {
+			console.log("Input is validated -> dates format wrong")
+			validationResult = {
+				...validationResult, datesFormatWrong: true, isValid: false
+			}
+		} else if (endDate.isBefore(startDate)) {
+			console.log("Input is validated -> end before start")
+			validationResult = {
+				...validationResult, startDateAfterEndDate: true, isValid: false
+			}
+		}
+
+		//check use count
+		if (!Number.isInteger(useCount) || useCount < 0) {
+			console.log("Input is validated -> use count format wrong")
+			validationResult = {
+				...validationResult, useCountWrongFormat: true, isValid: false
+			}
+		}
+
+		// check if QR contains illegal characters
+		// Paths must be non-empty strings and can't contain ".", "#", "$", "[", or "]"
+		if (code.includes('.') || code.includes('#')
+			|| code.includes('$') || code.includes('[')
+			|| code.includes(']') || code === '') {
+			console.log("Input is validated -> illegal characters in code")
+			validationResult = {
+				...validationResult, codeIllegalChar: true, isValid: false
+			}
+		}
+
+		console.log('At the end of validity check: isValid is ' + validationResult.isValid)
+		return validationResult
+	}
+
 	render() {
 		return (
 			<Modal size='lg' style={{height: '50%'}} isOpen={this.props.isOpen} toggle={() => this.props.toggle()}>
-				<ModalHeader>Bulk import from CSV</ModalHeader>
+				<ModalHeader toggle={this.props.toggle}>Bulk import from CSV</ModalHeader>
 				<ModalBody style={{height: '500px'}}>
 					{this.getCurrentStage()}
 				</ModalBody>

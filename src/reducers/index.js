@@ -16,12 +16,12 @@ const rootReducer = (state, action) => {
 
 	switch (action.type) {
 		case 'ACCT_LOGIN': {
-			logger('Store after reduce', {
-				...state,
-				isLoggedIn: true,
-				currentUser: action.currentUser,
-				currentUserUid: action.currentUserUid
-			})
+			// logger('Store after reduce', {
+			// 	...state,
+			// 	isLoggedIn: true,
+			// 	currentUser: action.currentUser,
+			// 	currentUserUid: action.currentUserUid
+			// })
 
 			return {
 				...state,
@@ -36,10 +36,10 @@ const rootReducer = (state, action) => {
 		}
 
 		case 'SET_BRAND_ID': {
-			logger('Store after reduce', {
-				...state,
-				currentBrandId: action.currentBrandId
-			})
+			// logger('Store after reduce', {
+			// 	...state,
+			// 	currentBrandId: action.currentBrandId
+			// })
 
 			return {
 				...state,
@@ -48,10 +48,10 @@ const rootReducer = (state, action) => {
 		}
 
 		case 'SET_OFFGOING_CODES': {
-			logger('Store after reduce', {
-				...state,
-				offgoingCodes: action.offgoingCodes
-			})
+			// logger('Store after reduce', {
+			// 	...state,
+			// 	offgoingCodes: action.offgoingCodes
+			// })
 
 			return {
 				...state,
@@ -60,10 +60,10 @@ const rootReducer = (state, action) => {
 		}
 
 		case 'SET_ONGOING_CODES': {
-			logger('Store after reduce', {
-				...state,
-				ongoingCodes: action.ongoingCodes
-			})
+			// logger('Store after reduce', {
+			// 	...state,
+			// 	ongoingCodes: action.ongoingCodes
+			// })
 
 			return {
 				...state,
@@ -79,15 +79,15 @@ const rootReducer = (state, action) => {
 			newMachinesData[machineId] = action.machineData
 			newState.machinesData = newMachinesData
 
-			logger('Store after reduce', newState)
+			//logger('Store after reduce', newState)
 			return newState
 		}
 
 		case 'SET_CURRENT_BRAND_NAME': {
-			logger('Store after reduce:', {
-				...state,
-				currentBrandName: action.currentBrandName
-			})
+			// logger('Store after reduce:', {
+			// 	...state,
+			// 	currentBrandName: action.currentBrandName
+			// })
 
 			return {
 				...state,

@@ -1,9 +1,5 @@
 import {
-	Card,
 	ModalHeader,
-	CardHeader,
-	Carousel,
-	CarouselItem,
 	Modal,
 	ModalBody,
 	ModalFooter,
@@ -16,59 +12,71 @@ import Dropzone from 'react-dropzone'
 import logger from '../../../Utils/logger'
 import Papa from 'papaparse'
 import XLSX from 'xlsx'
+import moment from "moment/moment";
 
 export default class ImportXlsxModal extends React.Component {
-	numberOfStages = 3
-
 	constructor(props) {
 		super(props)
 		this.state = {
-			currentStage: 0,
+			currentStage: 'INTRO', // INTRO -> CHOOSE_FILE -> PARSE_AND_UPLOAD
 			uploadedFile: null,
-			status: ''
+			status: 'STANDBY', // STANDBY -> PARSING -> UPLOADING -> DONE
+			errorType: null,
+			errorDetails: null,
 		}
 	}
 
 	componentWillReceiveProps = (nextProps) => {
-		if (this.props.isOpen || !nextProps.isOpen) {
+		if (this.props.isOpen && !nextProps.isOpen) {
+			logger('componentWillReceiveProps is fired')
 			this.setState({
-				currentStage: 0,
+				currentStage: 'INTRO', // INTRO -> CHOOSE_FILE -> PARSE_AND_UPLOAD
 				uploadedFile: null,
-				status: ''
+				status: 'STANDBY', // STANDBY -> PARSING -> UPLOADING -> DONE
+				errorType: null,
+				errorDetails: null,
 			})
 		}
 	}
 
 	next = () => {
+		let nextStage
+
+		if (this.state.currentStage === 'INTRO') nextStage = 'CHOOSE_FILE'
+		if (this.state.currentStage === 'CHOOSE_FILE') nextStage = 'PARSE_AND_UPLOAD'
+		if (this.state.currentStage === 'PARSE_AND_UPLOAD') return
+
 		this.setState({
-			currentStage: this.state.currentStage < this.numberOfStages - 1
-				? this.state.currentStage + 1 : this.state.currentStage
+			currentStage: nextStage
 		})
 	}
 
 	previous = () => {
+		let lastStage
+
+		if (this.state.currentStage === 'INTRO') return
+		if (this.state.currentStage === 'CHOOSE_FILE') lastStage = 'INTRO'
+		if (this.state.currentStage === 'PARSE_AND_UPLOAD') lastStage = 'CHOOSE_FILE'
 		this.setState({
-			currentStage: this.state.currentStage > 0
-				? this.state.currentStage - 1 : this.state.currentStage
+			currentStage: lastStage
 		})
 	}
 
 	getCurrentStage = () => {
 		switch (this.state.currentStage) {
-			case 0: {
+			case 'INTRO': {
 				return (
 					<div>
-						<p>This is a feature that allows you to import codes in a CSV file</p>
-						<p>Each row in the CSV file must follow this format</p>
-						<p>[QR][Start Date][End Date][Use Count]</p>
+						<p>This is a feature that allows you to import codes in a XLS / XLSX file</p>
+						<p>Each row in the Excel sheet must have 4 cells in the following order</p>
+						<p>QR - Start Date - End Date - Use Count</p>
 						<p>QR cannot contain ".", "#", "$", "[", or "]"</p>
 						<p>Start and end dates must be in DD/MM/YYYY</p>
 						<p>Use count must be a positive number</p>
-						<p>For example: qrcode,01/01/2000,02/01/2000,5</p>
 					</div>
 				)
 			}
-			case 1: {
+			case 'CHOOSE_FILE': {
 				return (
 					<div>
 						<p>Drag the XLS / XLSX file below or click to choose file to upload</p>
@@ -77,30 +85,50 @@ export default class ImportXlsxModal extends React.Component {
 					</div>
 				)
 			}
-			case 2: {
+			case 'PARSE_AND_UPLOAD': {
+				let status = this.state.status
+				let errorType = this.state.errorType
 				return (
 					<div>
+						{/* Progress bar */}
 						<div style={{display: 'flex', alignItems: "center", justifyContent: "center"}}>
-							{this.state.status !== 'done'
-								? <Progress animated value={100} style={{width: "33%"}}/>
-								: <Progress striped color="success" value={100} style={{width: "33%"}}/>
+							{status === 'PARSING' || status === 'UPLOADING'
+								? <Progress animated value={100} style={{width: "33%"}}/> : null
+							}
+							{status === 'DONE' && errorType === null
+								? <Progress striped color="success" value={100} style={{width: "33%"}}/> : null
+							}
+							{status === 'DONE' && errorType === 'INVALID_DATA_EXISTS'
+								? <Progress striped color="warning" value={100} style={{width: "33%"}}/> : null
+							}
+							{status === 'DONE' && errorType && errorType !== 'INVALID_DATA_EXISTS'
+								? <Progress striped color="danger" value={100} style={{width: "33%"}}/> : null
 							}
 						</div>
+
+						{/* Status under progress bar */}
 						<div style={{display: 'flex', alignItems: "center", justifyContent: "center"}}>
-							{this.state.status === '' ? <p>Parsing...</p> : null}
-							{this.state.status === 'upload_firebase' ? <p>Uploading...</p> : null}
-							{this.state.status === 'done' ? <p>Done!</p> : null}
+							{status === 'PARSING' ? <p>Parsing...</p> : null}
+							{status === 'UPLOADING' ? <p>Uploading...</p> : null}
+							{status === 'DONE' && errorType === null ? <p>Done!</p> : null}
+							{status === 'DONE' && errorType !== null ? <p>Done with errors</p> : null}
 						</div>
-						{ (this.state.status === 'upload_firebase' || this.state.status === 'done') ?
-							<div style={{display: 'flex', alignItems: "center", justifyContent: "center"}}>
-								<p>Parsed CSV file</p>
-							</div> : null
-						}
-						{ (this.state.status === 'done') ?
-							<div style={{display: 'flex', alignItems: "center", justifyContent: "center"}}>
-								<p>Uploaded to database</p>
-							</div> : null
-						}
+
+						{/* Details */}
+						<div style={{display: 'block', alignItems: "center", justifyContent: "center"}}>
+							{status === 'DONE' && !errorType ? <p>Successful uploaded all codes</p> : null}
+							{status === 'DONE' && errorType === 'INVALID_DATA_EXISTS'
+								? (
+									<div>
+										<p>{"Uploaded " + this.state.errorDetails.valid + " codes"}</p>
+										<p>{this.state.errorDetails.invalid + " rows were invalid"}</p>
+									</div>
+								) : null
+							}
+							{status === 'DONE' && errorType && errorType !== 'INVALID_DATA_EXISTS'
+								? <p>{this.state.errorDetails}</p> : null
+							}
+						</div>
 					</div>
 				)
 			}
@@ -118,27 +146,63 @@ export default class ImportXlsxModal extends React.Component {
 		var reader = new FileReader()
 
 		reader.onload = (e) => {
-			var workbook = XLSX.read(reader.result, {type: 'array'})
-			logger('csv', XLSX.utils.sheet_to_csv(workbook.Sheets['codes']))
+			this.setState({
+				status: 'PARSING'
+			})
+
+			var workbook
+			try {
+				workbook = XLSX.read(reader.result, {type: 'array'})
+			} catch (e) {
+				this.setState({
+					status: 'DONE',
+					errorType: 'READ_SHEET_FAIL',
+					errorDetails: 'Failed to read Excel file'
+				})
+				return
+			}
+
+			var csvString
+			try{
+				csvString = XLSX.utils.sheet_to_csv(workbook.Sheets['codes'])
+			} catch (e) {
+				this.setState({
+					status: 'DONE',
+					errorType: 'NO_CODE_SHEET',
+					errorDetails: "Failed to find a 'codes' sheet"
+				})
+				return
+			}
 			Papa.parse(XLSX.utils.sheet_to_csv(workbook.Sheets['codes']), {
 				complete: results => {
 					this.setState({
-						status: 'upload_firebase'
+						status: 'UPLOADING'
 					})
 
 					logger("papaparse results", results)
 
 					let firebaseUploadData = {}
 
+					var validRows = 0
+					var invalidRows = 0
+
 					Object.keys(results.data).map(key => {
 						let code = results.data[key][0]
 						let startDate = results.data[key][1]
 						let endDate = results.data[key][2]
 						let useCount = parseInt(results.data[key][3])
-						firebaseUploadData[code] = {
-							start_date: startDate,
-							end_date: endDate,
-							use_count: useCount
+
+						var validationResult = this.validateInput(code, startDate, endDate, useCount)
+
+						if (validationResult.isValid) {
+							firebaseUploadData[code] = {
+								start_date: startDate,
+								end_date: endDate,
+								use_count: useCount
+							}
+							validRows++
+						} else {
+							invalidRows++
 						}
 					})
 
@@ -147,9 +211,20 @@ export default class ImportXlsxModal extends React.Component {
 					firebase.database().ref('/brands/' + this.props.currentBrandId + '/events/ongoing/codes').update(
 						firebaseUploadData
 					).then(success => {
-						this.setState({
-							status: 'done'
-						})
+						if (invalidRows === 0) {
+							this.setState({
+								status: 'DONE'
+							})
+						} else {
+							this.setState({
+								status: 'DONE',
+								errorType: 'INVALID_DATA_EXISTS',
+								errorDetails: {
+									invalid: invalidRows,
+									valid: validRows
+								}
+							})
+						}
 						logger('parsed and uploaded to firebase')
 					}, error => {
 						logger('failed to parse and upload to firebase', error.message)
@@ -163,16 +238,16 @@ export default class ImportXlsxModal extends React.Component {
 
 	getNextButton = () =>{
 		switch (this.state.currentStage) {
-			case 0: return (
+			case 'INTRO': return (
 				<Button color="primary" onClick={this.next}>Next</Button>
 			)
-			case 1: return (
+			case 'CHOOSE_FILE': return (
 				<Button color="success" onClick={() => {
-					if (this.state.currentStage === 1) this.parseAndUpload()
-					this.next()
+					if (this.state.uploadedFile !== null) this.next()
+					this.parseAndUpload()
 				}}>Upload</Button>
 			)
-			case 2: return (
+			case 'PARSE_AND_UPLOAD': return (
 				<Button color="success" onClick={this.props.toggle}>Close</Button>
 			)
 			default: return (
@@ -183,8 +258,8 @@ export default class ImportXlsxModal extends React.Component {
 
 	getPreviousButton = () => {
 		switch (this.state.currentStage) {
-			case 0: return null
-			case 1: return (
+			case 'INTRO': return null
+			case 'CHOOSE_FILE': return (
 				<Button color="primary" onClick={() => {
 					this.previous()
 					this.setState({
@@ -192,7 +267,7 @@ export default class ImportXlsxModal extends React.Component {
 					})
 				}}>Back</Button>
 			)
-			case 2: return (
+			case 'PARSE_AND_UPLOAD': return (
 				<Button color="primary" onClick={() => {
 					this.previous()
 					this.setState({
@@ -207,10 +282,65 @@ export default class ImportXlsxModal extends React.Component {
 		}
 	}
 
+	validateInput = (code, _startDate, _endDate, useCount) => {
+		//initial state check
+		var validationResult = {
+			isValid: true
+		}
+
+		if (!code || !_startDate || !_endDate || !useCount) {
+			console.log("Input is validated -> uninitialized")
+			validationResult = {
+				...validationResult, missingFields: true, isValid: false
+			}
+			return validationResult
+		}
+
+		//check start/end date format
+		//check end date is after start date
+		var startDate = moment(_startDate, "DD/MM/YYYY")
+		var endDate = moment(_endDate, "DD/MM/YYYY")
+
+		if (!startDate.isValid() || !endDate.isValid()) {
+			console.log("Input is validated -> dates format wrong")
+			validationResult = {
+				...validationResult, datesFormatWrong: true, isValid: false
+			}
+		} else if (endDate.isBefore(startDate)) {
+			console.log("Input is validated -> end before start")
+			validationResult = {
+				...validationResult, startDateAfterEndDate: true, isValid: false
+			}
+		}
+
+		//check use count
+		if (!Number.isInteger(useCount) || useCount < 0) {
+			console.log("Input is validated -> use count format wrong")
+			validationResult = {
+				...validationResult, useCountWrongFormat: true, isValid: false
+			}
+		}
+
+		// check if QR contains illegal characters
+		// Paths must be non-empty strings and can't contain ".", "#", "$", "[", or "]"
+		if (code.includes('.') || code.includes('#')
+			|| code.includes('$') || code.includes('[')
+			|| code.includes(']') || code === '') {
+			console.log("Input is validated -> illegal characters in code")
+			validationResult = {
+				...validationResult, codeIllegalChar: true, isValid: false
+			}
+		}
+
+		console.log('At the end of validity check: isValid is ' + validationResult.isValid)
+		return validationResult
+	}
+
 	render() {
+		logger('xlsx modal state', this.state)
 		return (
 			<Modal size='lg' style={{height: '50%'}} isOpen={this.props.isOpen} toggle={() => this.props.toggle()}>
-				<ModalHeader>Bulk import from CSV</ModalHeader>
+				<ModalHeader toggle={this.props.toggle}>Bulk import from CSV</ModalHeader>
 				<ModalBody style={{height: '500px'}}>
 					{this.getCurrentStage()}
 				</ModalBody>
