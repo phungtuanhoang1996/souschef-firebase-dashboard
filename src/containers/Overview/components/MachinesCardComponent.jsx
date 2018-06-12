@@ -1,5 +1,4 @@
 import React from 'react';
-import { Card, CardBody, CardHeader, CardSubtitle, ListGroup, ListGroupItem } from 'reactstrap';
 import { Segment, Table } from 'semantic-ui-react'
 import {styled} from 'styled-components';
 

@@ -57,43 +57,45 @@ class OverviewComponent extends React.Component {
 	render() {
 		return (
 			<div className="overviewWrapper">
-				<Segment raised style={{
-					height: '40vh',
-					margin: '10px',
-					padding: '0px',
+				<div style={{
 					display: 'flex',
-					flexDirection: 'column'
+					height: '40vh',
+					margin: '0px',
+					padding: '5px',
+					paddingBottom: '2px'
 				}}>
-					<h2 style={{padding: '10px', paddingLeft: '20px', margin: '0px'}}>Machines Status</h2>
-					<div style={{
+					<Segment raised style={{
 						flex: '1',
 						margin: '0px',
-						display: 'flex'
+						padding: '0px',
+						display: 'flex',
+						flexDirection: 'column'
 					}}>
+						<h2 style={{padding: '10px', paddingLeft: '20px', margin: '0px'}}>Machines Status</h2>
 						<div style={{
-							flex: '1', display: 'flex'
+							flex: '1',
+							margin: '0px',
+							display: 'flex'
 						}}>
-							<MachinesCardComponent title="online" machines={this.getMachines(this.props.machinesData, 'online')}/>
+							<div style={{
+								flex: '1', display: 'flex'
+							}}>
+								<MachinesCardComponent title="online" machines={this.getMachines(this.props.machinesData, 'online')}/>
+							</div>
+							<div style={{
+								flex: '1'
+							}}>
+								<MachinesCardComponent title="offline" machines={this.getMachines(this.props.machinesData, 'offline')}/>
+							</div>
 						</div>
-						<div style={{
-							flex: '1'
-						}}>
-							<MachinesCardComponent title="offline" machines={this.getMachines(this.props.machinesData, 'offline')}/>
-						</div>
-						{/*<Card>*/}
-							{/*<CardHeader>Machines</CardHeader>*/}
-							{/*<Row>*/}
-								{/*<Col sm="6">*/}
-									{/*<MachinesCardComponent title="Online" machines={this.getMachines(this.props.machinesData, 'online')}/>*/}
-								{/*</Col>*/}
-								{/*<Col sm="6">*/}
-									{/*<MachinesCardComponent title="Offline" machines={this.getMachines(this.props.machinesData, 'offline')}/>*/}
-								{/*</Col>*/}
-							{/*</Row>*/}
-						{/*</Card>*/}
-					</div>
-				</Segment>
-				<div style={{height: '60vh'}} className="codeCardComponent">
+					</Segment>
+				</div>
+				<div style={{
+					display: 'flex',
+					height: '60vh',
+					margin: '0px',
+					padding: '5px',
+					paddingTop: '3px'}}>
 					<CodeCardComponent
 						firebaseOngoingCodes={this.props.ongoingCodes}
 						firebaseOffgoingCodes={this.props.offgoingCodes}
@@ -107,6 +109,7 @@ class OverviewComponent extends React.Component {
 					details={this.state.codeModificationDetails}
 				/>
 				<NewCodeModal
+
 					isOpen={this.state.newCodeModal}
 					toggle={this.toggleNewCodeModal}
 					details={this.state.newCodeModalDetails}

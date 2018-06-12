@@ -1,24 +1,8 @@
 import React, {Component} from 'react';
-import {
-	Button,
-	Card,
-	CardBody,
-	CardHeader,
-	CardTitle,
-	CardSubtitle,
-	DropdownItem,
-	DropdownToggle,
-	DropdownMenu,
-	Modal,
-	ModalHeader,
-	Table,
-	UncontrolledDropdown,
-	InputGroup,
-	Input,
-	InputGroupAddon
-} from 'reactstrap';
-import QrReader from 'react-qr-reader'
 import logger from "../../../Utils/logger";
+import { Segment, Table, Button, Input, Icon, Modal } from 'semantic-ui-react'
+import qrScanIcon from '../../../resources/icons/qr-scan.png'
+import QrReader from 'react-qr-reader'
 
 export default class CodeCardComponent extends Component {
 	constructor(props) {
@@ -74,6 +58,12 @@ export default class CodeCardComponent extends Component {
 		})
 	}
 
+	closeQr = () => {
+		this.setState({
+			qrScanner: false
+		})
+	}
+
 	handleQrResult = (result) => {
 		if (result != null) {
 			this.setState({
@@ -85,118 +75,104 @@ export default class CodeCardComponent extends Component {
 
 	render() {
 		return (
-			<Card>
-				<Modal isOpen={this.state.qrScanner} toggle={this.toggleQR}>
-					<ModalHeader>QR code scanner</ModalHeader>
-					<QrReader
-						delay={500}
-						onError={(error) => {logger('QR error', error)}}
-						onScan={(result) => this.handleQrResult(result)}
-						style={{margin: '5px'}}
-					/>
-				</Modal>
-				<CardHeader>Event Codes</CardHeader>
-				<CardBody>
-					<CardTitle className="text-center">
-						Code Count: {' '}
-						{
-							this.totalCodesCount()
-						}
-					</CardTitle>
-					<CardSubtitle style={{marginBottom: '5px', display: "flex"}}>
-						<UncontrolledDropdown style={{marginRight: '5px'}}>
-							<DropdownToggle caret>
-								{this.state.selectedEvent}
-							</DropdownToggle>
-							<DropdownMenu>
-								<DropdownItem onClick={(e) => {
-									this.changeSelectedEvent('ongoing')
-								}}>ongoing</DropdownItem>
-								<DropdownItem divider/>
-								<DropdownItem onClick={(e) => {
-									this.changeSelectedEvent('offgoing')
-								}}>offgoing</DropdownItem>
-							</DropdownMenu>
-						</UncontrolledDropdown>
-
-						<InputGroup size='normal' style={{marginLeft: '5px', marginRight: '5px'}}>
-							<Input
-								value={this.state.filterKeyword}
-								onChange={(event) => {
-									this.handleFilterKeywordChange(event)
-								}}
-							>
-							</Input>
-							<InputGroupAddon addonType='append'>
-								<Button onClick={this.openQR}>QR Scanner</Button>
-							</InputGroupAddon>
-						</InputGroup>
-
+			<Segment raised style={{
+				flex: '1',
+				margin: '0px',
+				padding: '0px',
+				display: 'flex',
+				flexDirection: 'column'
+			}}>
+				<h2 style={{padding: '10px', paddingLeft: '20px', margin: '0px'}}>
+					Event Codes: {this.totalCodesCount()} code{this.totalCodesCount() > 2 ? 's' : null} registered
+				</h2>
+				<div style={{flex: '1', paddingLeft: '20px', paddingRight: '20px', display: 'flex', flexDirection: 'column'}}>
+					<div style={{display: 'flex', width: "100%", flex: 'none'}}>
+						<Button onClick={this.openQR} size='medium'>
+							<div style={{display: 'table'}}>
+								<img src={qrScanIcon} alt='qr scan icon' width='25' height='25' style={{marginRight: '5px'}}/>
+								<div style={{display: 'table-cell', verticalAlign: 'middle'}}>QR Scanner</div>
+							</div>
+						</Button>
+						<Input
+							value={this.state.filterKeyword}
+							onChange={(event) => {
+								this.handleFilterKeywordChange(event)
+							}}
+							placeholder="Type here to filter QR codes..."
+							style={{flex: '1', marginLeft: '5px', marginRight: '5px'}}
+						/>
 						<Button
 							color="primary"
 							onClick={() => {
 								this.props.onNewCodeButtonClicked()
-							}}>Add
+							}}
+							style={{marginLeft: '5px', backgroundColor: '#29BA99'}}>Add a new code
 						</Button>
-					</CardSubtitle>
-					<Table striped bordered>
-						<thead>
-						<tr>
-							<th width="40%">Code</th>
-							<th width="15%">Uses Left</th>
-							<th width="15%">Start Date</th>
-							<th width="15%">End Date</th>
-							<th width="15%"></th>
-						</tr>
-						</thead>
-						<tbody>
-						{
-							this.totalCodesCount() != 0 ?
-								Object.keys(this.codesTypeTobeShown()).map((code) => {
-									return <tr key={code.toString()}>
-										<td style={styles.tableData}>
-											{code}
-										</td>
-										<td style={styles.tableData}>
-											{this.codesTypeTobeShown()[code].use_count}
-										</td>
-										<td style={styles.tableData}>
-											{
-												this.codesTypeTobeShown()[code].start_date != "" ? this.codesTypeTobeShown()[code].start_date : "N/A"
-											}
-										</td>
-										<td style={styles.tableData}>
-											{
-												this.codesTypeTobeShown()[code].end_date != "" ? this.codesTypeTobeShown()[code].end_date : "N/A"
-											}
-										</td>
-										<td style={styles.modifyButtonCell}>
-											<Button onClick={() => {
-												this.props.onModifyButtonClicked(code,
-													this.codesTypeTobeShown()[code].start_date,
-													this.codesTypeTobeShown()[code].end_date,
-													this.codesTypeTobeShown()[code].use_count
-												)
-											}
-											}
-											>
-												Modify
-											</Button>
-										</td>
-									</tr>
-								})
-								: null
-						}
-						</tbody>
-					</Table>
-				</CardBody>
-			</Card>
+					</div>
+
+					<div style={{marginTop: '5px', marginBottom: '0px', flex: 'none', overflowY: 'scroll'}}>
+						<Table celled striped>
+							<Table.Header style={{flex: 'none'}}>
+								<Table.HeaderCell textAlign='center' style={{width: '40%', backgroundColor: '#E3EEF9'}}>Code</Table.HeaderCell>
+								<Table.HeaderCell textAlign='center' style={{width: '15%', backgroundColor: '#E3EEF9'}}>Uses Left</Table.HeaderCell>
+								<Table.HeaderCell textAlign='center' style={{width: '15%', backgroundColor: '#E3EEF9'}}>Start Date</Table.HeaderCell>
+								<Table.HeaderCell textAlign='center' style={{width: '15%', backgroundColor: '#E3EEF9'}}>End Date</Table.HeaderCell>
+								<Table.HeaderCell textAlign='center' style={{width: '15%', backgroundColor: '#E3EEF9'   }}>Action</Table.HeaderCell>
+							</Table.Header>
+						</Table>
+					</div>
+
+					<div style={{flex: 'auto', overflowY: 'scroll', marginTop: '0px', marginBottom: '10px'}}>
+						<Table celled striped>
+							<Table.Body>
+								{
+									Object.keys(this.codesTypeTobeShown()).map((code) => {
+										return (
+											<Table.Row>
+												<Table.Cell textAlign='center' verticalAlign='middle' style={{width: '40%'}}>{code}</Table.Cell>
+												<Table.Cell textAlign='center' verticalAlign='middle' style={{width: '15%'}}>{this.codesTypeTobeShown()[code].start_date != "" ? this.codesTypeTobeShown()[code].start_date : "N/A"}</Table.Cell>
+												<Table.Cell textAlign='center' verticalAlign='middle' style={{width: '15%'}}>{this.codesTypeTobeShown()[code].end_date != "" ? this.codesTypeTobeShown()[code].end_date : "N/A"}</Table.Cell>
+												<Table.Cell textAlign='center' verticalAlign='middle' style={{width: '15%'}}>{this.codesTypeTobeShown()[code].use_count}</Table.Cell>
+												<Table.Cell textAlign='center' verticalAlign='middle' style={{width: '15%'}}>
+													<Button size='small' onClick={() => {
+														this.props.onModifyButtonClicked(code,
+															this.codesTypeTobeShown()[code].start_date,
+															this.codesTypeTobeShown()[code].end_date,
+															this.codesTypeTobeShown()[code].use_count
+														)
+													}
+													}
+													>
+														Modify
+													</Button>
+												</Table.Cell>
+											</Table.Row>
+										)
+									})
+								}
+							</Table.Body>
+						</Table>
+					</div>
+				</div>
+				<Modal closeIcon dimmer='blurring' size='mini' open={this.state.qrScanner} onClose={this.closeQr}>
+					<Modal.Header>QR code scanner</Modal.Header>
+					<Modal.Content>
+						<QrReader
+							delay={500}
+							onError={(error) => {logger('QR error', error)}}
+							onScan={(result) => this.handleQrResult(result)}
+							style={{margin: '5px'}}
+						/>
+					</Modal.Content>
+				</Modal>
+			</Segment>
 		)
 	}
 }
 
 const styles = {
 	tableData: {
+		verticalAlign: "middle",
 		verticalAlign: "middle",
 	},
 	modifyButtonCell: {

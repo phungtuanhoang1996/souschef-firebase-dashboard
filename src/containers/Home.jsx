@@ -70,9 +70,11 @@ class Home extends React.Component {
 
         const errorModal = 
         <Modal isOpen={this.state.errorPopup} toggle={this.toggleErrorPopup}>
-            <ModalHeader toggle={this.toggleErrorPopup}>Invalid username/password</ModalHeader>
+            <ModalHeader toggle={this.toggleErrorPopup}>Login Error</ModalHeader>
             <ModalBody>
-                {this.state.errorMessage} <br/>Please try again or click here to reset password
+                {this.state.errorMessage}
+                <br/>
+                {this.state.errorMessage === "Invalid username/password." ? 'Please try again or click here to reset password' :  null}
             </ModalBody>
             <ModalFooter>
                 <Button color="secondary" onClick={this.toggleErrorPopup}>Close</Button>
