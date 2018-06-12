@@ -61,8 +61,8 @@ class OverviewComponent extends React.Component {
 					display: 'flex',
 					height: '40vh',
 					margin: '0px',
-					padding: '5px',
-					paddingBottom: '2px'
+					padding: '10px',
+					paddingBottom: '5px'
 				}}>
 					<Segment raised style={{
 						flex: '1',
@@ -94,8 +94,8 @@ class OverviewComponent extends React.Component {
 					display: 'flex',
 					height: '60vh',
 					margin: '0px',
-					padding: '5px',
-					paddingTop: '3px'}}>
+					padding: '10px',
+					paddingTop: '5px'}}>
 					<CodeCardComponent
 						firebaseOngoingCodes={this.props.ongoingCodes}
 						firebaseOffgoingCodes={this.props.offgoingCodes}

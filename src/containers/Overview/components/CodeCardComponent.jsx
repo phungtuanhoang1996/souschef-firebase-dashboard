@@ -102,11 +102,11 @@ export default class CodeCardComponent extends Component {
 							style={{flex: '1', marginLeft: '5px', marginRight: '5px'}}
 						/>
 						<Button
-							color="primary"
+							color='teal'
 							onClick={() => {
 								this.props.onNewCodeButtonClicked()
 							}}
-							style={{marginLeft: '5px', backgroundColor: '#29BA99'}}>Add a new code
+							style={{marginLeft: '5px'}}>Add a new code
 						</Button>
 					</div>
 

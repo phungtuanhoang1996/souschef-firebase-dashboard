@@ -1,12 +1,9 @@
 import React from 'react';
-import MachinesCardComponent from './components/MachinesCardComponent';
 import CodeCardComponent from './components/CodeCardComponent';
 import './QrCodesComponent.css';
 import {
-	Card,
 	CardHeader,
 	CardBody,
-	Button
 } from 'reactstrap';
 import {styled} from 'styled-components';
 import {connect} from 'react-redux'
@@ -15,6 +12,10 @@ import NewCodeModal from './components/NewCodeModal'
 import logger from "../../Utils/logger";
 import ImportCsvModal from "./components/ImportCsvModal";
 import ImportXlsxModal from "./components/ImportXlsxModal"
+import {Segment, Button, Card, Icon} from "semantic-ui-react";
+import csvIcon from '../../resources/icons/csv-icon.svg'
+import xlsIcon from '../../resources/icons/xls-icon.svg'
+
 
 const mapStateToProps = (state) => {
 	return {
@@ -127,7 +128,13 @@ class QrCodesComponent extends React.Component {
 	render() {
 		return (
 			<div className="qrCodesWrapper">
-				<div className="codeCardComponent">
+				<div style={{
+					display: 'flex',
+					height: '70vh',
+					margin: '0px',
+					padding: '10px',
+					paddingBottom: '5px'
+				}}>
 					<CodeCardComponent
 						firebaseOngoingCodes={this.props.ongoingCodes}
 						firebaseOffgoingCodes={this.props.offgoingCodes}
@@ -135,14 +142,78 @@ class QrCodesComponent extends React.Component {
 						onNewCodeButtonClicked={this.showNewCodeModal}
 					/>
 				</div>
-				<Card className="bulkImportCard">
-					<CardHeader>Bulk Import</CardHeader>
-					<div style={{display: 'flex', padding: '5px'}}>
-						<CardBody>Import multiple codes from .CSV or .XLS/.XLSX</CardBody>
-						<Button color="primary" style={{margin: '5px'}} onClick={this.showImportCsvModal}>Import from .CSV</Button>
-						<Button color="primary" style={{margin: '5px'}} onClick={this.showImportXlsxModal}>Import from .XLSX</Button>
-					</div>
-				</Card>
+
+				<div style={{
+					display: 'flex',
+					height: '30vh',
+					margin: '0px',
+					padding: '10px',
+					paddingTop: '5px'
+				}}>
+					<Segment raised style={{
+						flex: '1',
+						margin: '0px',
+						padding: '0px',
+						display: 'flex',
+						flexDirection: 'column'
+					}}>
+						<h2 style={{padding: '10px', paddingLeft: '20px', margin: '0px'}}>Codes Management Utilities</h2>
+
+						<div style={{
+							flex: '1',
+							margin: '0px',
+							padding: '20px', paddingTop: '0px',
+							display: 'flex'
+						}}>
+							<div style={{
+								flex: 'none',
+								marginRight: '10px',
+								display: 'flex'
+							}}>
+								<Card style={{
+									flex: '1'
+								}}>
+									<Card.Content style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+										<h3 align='center'>Import multiple codes from a .CSV file</h3>
+									</Card.Content>
+
+									<Card.Content style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+										<Button color={'teal'} style={{flex: 'none'}}
+										        onClick={this.showImportCsvModal}
+										>
+											<Icon name='upload' inverted/>
+											Import
+										</Button>
+									</Card.Content>
+								</Card>
+							</div>
+
+							<div style={{
+								flex: 'none',
+								marginLeft: '10px',
+								display: 'flex'
+							}}>
+								<Card style={{
+									flex: '1'
+								}}>
+									<Card.Content style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+										<h3 align='center'>Import multiple codes from a .XLS/.XLSX file</h3>
+									</Card.Content>
+
+									<Card.Content style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+											<Button color={'teal'} style={{flex: 'none'}}
+											        onClick={this.showImportXlsxModal}
+											>
+												<Icon name='upload' inverted/>
+												Import
+											</Button>
+									</Card.Content>
+								</Card>
+							</div>
+						</div>
+					</Segment>
+				</div>
+
 				<CodeModificationModal
 					isOpen={this.state.codeModificationModal}
 					toggle={this.toggleCodeModificationModal}
