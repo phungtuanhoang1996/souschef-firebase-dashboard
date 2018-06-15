@@ -2,15 +2,14 @@ import {
 	Input,
 	InputGroupAddon,
 	InputGroup,
-	Button,
-	Modal,
-	ModalHeader,
+	Button, ModalHeader,
 	ModalBody,
 	ModalFooter,
 	Collapse,
 	Card,
 	CardBody
 } from 'reactstrap'
+import {Modal} from 'semantic-ui-react'
 import React from 'react'
 import QrReader from 'react-qr-reader'
 import DatePicker from 'react-datepicker'
@@ -52,7 +51,10 @@ export default class CodeModificationModal extends React.Component {
 		if (this.state.details && this.state.details.endDate) console.log(moment(this.state.details.endDate, "DD/MM/YYYY"))
 		return (
 			<div>
-				<Modal isOpen={this.props.isOpen} toggle={() => this.props.toggle()} className={this.props.className}>
+				<Modal
+					open={this.props.isOpen}
+					onClose={this.props.close}
+				>
 					<ModalHeader toggle={() => this.props.toggle()}>Modify QR code</ModalHeader>
 					<ModalBody>
 						<div

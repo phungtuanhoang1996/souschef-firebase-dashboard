@@ -1,11 +1,3 @@
-import {
-	ModalHeader,
-	Modal,
-	ModalBody,
-	ModalFooter,
-	Button,
-	Progress
-} from 'reactstrap'
 import firebase from 'firebase'
 import React from 'react'
 import Dropzone from 'react-dropzone'
@@ -13,6 +5,9 @@ import logger from '../../../Utils/logger'
 import Papa from 'papaparse'
 import XLSX from 'xlsx'
 import moment from "moment/moment";
+import {Modal, Button, Image, Progress} from 'semantic-ui-react'
+import xlsxExample from '../../../resources/images/xlsx-example.png'
+import xlsxIcon from '../../../resources/icons/xls-icon.svg'
 
 export default class ImportXlsxModal extends React.Component {
 	constructor(props) {
@@ -66,22 +61,69 @@ export default class ImportXlsxModal extends React.Component {
 		switch (this.state.currentStage) {
 			case 'INTRO': {
 				return (
-					<div>
-						<p>This is a feature that allows you to import codes in a XLS / XLSX file</p>
-						<p>Each row in the Excel sheet must have 4 cells in the following order</p>
-						<p>QR - Start Date - End Date - Use Count</p>
-						<p>QR cannot contain ".", "#", "$", "[", or "]"</p>
-						<p>Start and end dates must be in DD/MM/YYYY</p>
-						<p>Use count must be a positive number</p>
+					<div style={{
+						display: 'table'
+					}}>
+						<Image src={xlsxExample} rounded bordered alt='example' style={{height: '27vmin', objectFit: 'contain'}}>
+						</Image>
+
+						<div style={{display: 'table-cell', padding:'auto', paddingLeft: '20px', verticalAlign: 'middle', textAlign: 'left'}}>
+							<h3>Before you upload an Excel file...</h3>
+							<div className="ui list">
+								<a className="item">
+									<i className="right triangle icon"></i>
+									<div className="content">
+										<div className="description">All codes should be in a sheet named <b>"codes"</b></div>
+									</div>
+								</a>
+
+								<a className="item">
+									<i className="right triangle icon"></i>
+									<div className="content">
+										<div className="description">Each row in the Excel sheet must have 4 cells in the following order:</div>
+										<div className="description"><b>QR - Start Dat
+											e - End Date - Use Count</b></div>
+									</div>
+								</a>
+
+								<a className="item">
+									<i className="right triangle icon"></i>
+									<div className="content">
+										<div className="description">QR cannot contain ".", "#", "$", "[", or "]"</div>
+									</div>
+								</a>
+
+								<a className="item">
+									<i className="right triangle icon"></i>
+									<div className="content">
+										<div className="description">Start and end dates must be in DD/MM/YYYY</div>
+									</div>
+								</a>
+
+								<a className="item">
+									<i className="right triangle icon"></i>
+									<div className="content">
+										<div className="description">Use count must be a positive number</div>
+									</div>
+								</a>
+							</div>
+						</div>
 					</div>
 				)
 			}
 			case 'CHOOSE_FILE': {
 				return (
-					<div>
-						<p>Drag the XLS / XLSX file below or click to choose file to upload</p>
-						<Dropzone onDrop={this.onDrop}/>
-						<p>Uploaded file: {this.state.uploadedFile === null ? 'None' : this.state.uploadedFile.name}</p>
+					<div style={{display: 'table', margin: 'auto'}}>
+						<div style={{display: 'table-cell'}}>
+							<Dropzone onDrop={this.onDrop}>
+								<img src={xlsxIcon} alt='xlsx icon' style={{height: '200px', objectFit: 'contain', padding: '50px'}}/>
+							</Dropzone>
+						</div>
+						<div style={{display: 'table-cell', padding: 'auto', paddingLeft: '20px', verticalAlign: 'middle', textAlign: 'left'}}>
+							<h3 style={{padding: '0px'}}>Drag a .XLS / .XLSX file into the box or click to choose a file to upload</h3>
+							<br/>
+							<p style={{padding: '0px'}}>Uploaded file: {this.state.uploadedFile === null ? 'None' : this.state.uploadedFile.name}</p>
+						</div>
 					</div>
 				)
 			}
@@ -89,39 +131,36 @@ export default class ImportXlsxModal extends React.Component {
 				let status = this.state.status
 				let errorType = this.state.errorType
 				return (
-					<div>
-						{/* Progress bar */}
-						<div style={{display: 'flex', alignItems: "center", justifyContent: "center"}}>
-							{status === 'PARSING' || status === 'UPLOADING'
-								? <Progress animated value={100} style={{width: "33%"}}/> : null
-							}
-							{status === 'DONE' && errorType === null
-								? <Progress striped color="success" value={100} style={{width: "33%"}}/> : null
-							}
-							{status === 'DONE' && errorType === 'INVALID_DATA_EXISTS'
-								? <Progress striped color="warning" value={100} style={{width: "33%"}}/> : null
-							}
-							{status === 'DONE' && errorType && errorType !== 'INVALID_DATA_EXISTS'
-								? <Progress striped color="danger" value={100} style={{width: "33%"}}/> : null
-							}
-						</div>
+					<div style={{height: '100%'}}>
+						{/* Loader*/}
+						{status !== 'DONE'
+							? (
+								<div className="ui active inverted dimmer" style={{display: 'flex', alignItems: "center", justifyContent: "center"}}>
+									<div className="ui active centered text inline loader">
+										{status === 'PARSING' ? 'Parsing': null}
+										{status === 'UPLOADING' ? 'Uploading' : null}
+									</div>
+								</div>
+							)
+							: null
+						}
 
-						{/* Status under progress bar */}
-						<div style={{display: 'flex', alignItems: "center", justifyContent: "center"}}>
-							{status === 'PARSING' ? <p>Parsing...</p> : null}
-							{status === 'UPLOADING' ? <p>Uploading...</p> : null}
-							{status === 'DONE' && errorType === null ? <p>Done!</p> : null}
-							{status === 'DONE' && errorType !== null ? <p>Done with errors</p> : null}
-						</div>
+						{/*/!* Status under progress bar *!/*/}
+						{/*<div style={{display: 'flex', alignItems: "center", justifyContent: "center"}}>*/}
+							{/*{status === 'PARSING' ? <p>Parsing...</p> : null}*/}
+							{/*{status === 'UPLOADING' ? <p>Uploading...</p> : null}*/}
+							{/*{status === 'DONE' && errorType === null ? <p>Done!</p> : null}*/}
+							{/*{status === 'DONE' && errorType !== null ? <p>Done with errors</p> : null}*/}
+						{/*</div>*/}
 
 						{/* Details */}
-						<div style={{display: 'block', alignItems: "center", justifyContent: "center"}}>
+						<div style={{display: 'table', height: '100%'}}>
 							{status === 'DONE' && !errorType ? <p>Successful uploaded all codes</p> : null}
 							{status === 'DONE' && errorType === 'INVALID_DATA_EXISTS'
 								? (
-									<div>
-										<p>{"Uploaded " + this.state.errorDetails.valid + " codes"}</p>
-										<p>{this.state.errorDetails.invalid + " rows were invalid"}</p>
+									<div style={{display: 'table-cell', textAlign:' center', verticalAlign: 'middle'}}>
+										<h4>{"Uploaded " + this.state.errorDetails.valid + " codes"}</h4>
+										<h4>{this.state.errorDetails.invalid + " rows were invalid"}</h4>
 									</div>
 								) : null
 							}
@@ -239,16 +278,19 @@ export default class ImportXlsxModal extends React.Component {
 	getNextButton = () =>{
 		switch (this.state.currentStage) {
 			case 'INTRO': return (
-				<Button color="primary" onClick={this.next}>Next</Button>
+				<Button color="blue" onClick={this.next}>Next</Button>
 			)
 			case 'CHOOSE_FILE': return (
-				<Button color="success" onClick={() => {
-					if (this.state.uploadedFile !== null) this.next()
-					this.parseAndUpload()
-				}}>Upload</Button>
+				<Button color={this.state.uploadedFile !== null ? 'green' : ''}
+				        onClick={() => {
+							if (this.state.uploadedFile !== null) this.next()
+							this.parseAndUpload()
+						}}
+				        disabled={this.state.uploadedFile === null}
+				>Upload</Button>
 			)
 			case 'PARSE_AND_UPLOAD': return (
-				<Button color="success" onClick={this.props.toggle}>Close</Button>
+				<Button onClick={this.props.close}>Close</Button>
 			)
 			default: return (
 				<Button color="primary" onClick={this.next}>Next</Button>
@@ -260,7 +302,7 @@ export default class ImportXlsxModal extends React.Component {
 		switch (this.state.currentStage) {
 			case 'INTRO': return null
 			case 'CHOOSE_FILE': return (
-				<Button color="primary" onClick={() => {
+				<Button onClick={() => {
 					this.previous()
 					this.setState({
 						uploadedFile: null
@@ -268,7 +310,7 @@ export default class ImportXlsxModal extends React.Component {
 				}}>Back</Button>
 			)
 			case 'PARSE_AND_UPLOAD': return (
-				<Button color="primary" onClick={() => {
+				<Button color="blue" onClick={() => {
 					this.previous()
 					this.setState({
 						uploadedFile: null,
@@ -277,7 +319,7 @@ export default class ImportXlsxModal extends React.Component {
 				}}>Import another</Button>
 			)
 			default: return (
-				<Button color="primary" onClick={this.next}>Next</Button>
+				<Button onClick={this.next}>Next</Button>
 			)
 		}
 	}
@@ -339,15 +381,20 @@ export default class ImportXlsxModal extends React.Component {
 	render() {
 		logger('xlsx modal state', this.state)
 		return (
-			<Modal size='lg' style={{height: '50%'}} isOpen={this.props.isOpen} toggle={() => this.props.toggle()}>
-				<ModalHeader toggle={this.props.toggle}>Bulk import from CSV</ModalHeader>
-				<ModalBody style={{height: '500px'}}>
+			<Modal
+				dimmer='blurring'
+				open={this.props.isOpen}
+				closeIcon onClose={this.props.close}
+				closeOnDimmerClick={false}
+			>
+				<Modal.Header>Bulk import from Excel sheet</Modal.Header>
+				<Modal.Content align='center' style={{height: '33vh', width: '50vw', margin: 'auto'}}>
 					{this.getCurrentStage()}
-				</ModalBody>
-				<ModalFooter>
+				</Modal.Content>
+				<Modal.Actions>
 					{this.getPreviousButton()}
 					{this.getNextButton()}
-				</ModalFooter>
+				</Modal.Actions>
 			</Modal>
 		)
 	}

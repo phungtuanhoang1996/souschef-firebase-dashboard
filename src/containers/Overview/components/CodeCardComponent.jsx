@@ -102,6 +102,7 @@ export default class CodeCardComponent extends Component {
 							style={{flex: '1', marginLeft: '5px', marginRight: '5px'}}
 						/>
 						<Button
+
 							color='teal'
 							onClick={() => {
 								this.props.onNewCodeButtonClicked()
@@ -113,11 +114,11 @@ export default class CodeCardComponent extends Component {
 					<div style={{marginTop: '5px', marginBottom: '0px', flex: 'none', overflowY: 'scroll'}}>
 						<Table celled striped>
 							<Table.Header style={{flex: 'none'}}>
-								<Table.HeaderCell textAlign='center' style={{width: '40%', backgroundColor: '#E3EEF9'}}>Code</Table.HeaderCell>
-								<Table.HeaderCell textAlign='center' style={{width: '15%', backgroundColor: '#E3EEF9'}}>Uses Left</Table.HeaderCell>
-								<Table.HeaderCell textAlign='center' style={{width: '15%', backgroundColor: '#E3EEF9'}}>Start Date</Table.HeaderCell>
-								<Table.HeaderCell textAlign='center' style={{width: '15%', backgroundColor: '#E3EEF9'}}>End Date</Table.HeaderCell>
-								<Table.HeaderCell textAlign='center' style={{width: '15%', backgroundColor: '#E3EEF9'   }}>Action</Table.HeaderCell>
+								<Table.HeaderCell textAlign='center' style={{width: '40%', backgroundColor: '#C2D4EA'}}>Code</Table.HeaderCell>
+								<Table.HeaderCell textAlign='center' style={{width: '15%', backgroundColor: '#C2D4EA'}}>Uses Left</Table.HeaderCell>
+								<Table.HeaderCell textAlign='center' style={{width: '15%', backgroundColor: '#C2D4EA'}}>Start Date</Table.HeaderCell>
+								<Table.HeaderCell textAlign='center' style={{width: '15%', backgroundColor: '#C2D4EA'}}>End Date</Table.HeaderCell>
+								<Table.HeaderCell textAlign='center' style={{width: '15%', backgroundColor: '#C2D4EA'   }}>Action</Table.HeaderCell>
 							</Table.Header>
 						</Table>
 					</div>

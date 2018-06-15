@@ -118,9 +118,10 @@ class QrCodesComponent extends React.Component {
 		})
 	}
 
-	toggleImportXlsxModal = () => {
+	closeImportXlsxModal = () => {
+		logger('close xlsx modal called')
 		this.setState({
-			importXlsxModal: !this.state.importXlsxModal
+			importXlsxModal: false
 		})
 	}
 
@@ -173,7 +174,7 @@ class QrCodesComponent extends React.Component {
 								<Card style={{
 									flex: '1'
 								}}>
-									<Card.Content style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+									<Card.Content style={{display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#C1D3E9'}}>
 										<h3 align='center'>Import multiple codes from a .CSV file</h3>
 									</Card.Content>
 
@@ -196,7 +197,7 @@ class QrCodesComponent extends React.Component {
 								<Card style={{
 									flex: '1'
 								}}>
-									<Card.Content style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+									<Card.Content style={{display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#C1D3E9'}}>
 										<h3 align='center'>Import multiple codes from a .XLS/.XLSX file</h3>
 									</Card.Content>
 
@@ -214,11 +215,6 @@ class QrCodesComponent extends React.Component {
 					</Segment>
 				</div>
 
-				<CodeModificationModal
-					isOpen={this.state.codeModificationModal}
-					toggle={this.toggleCodeModificationModal}
-					details={this.state.codeModificationDetails}
-				/>
 				<NewCodeModal
 					isOpen={this.state.newCodeModal}
 					toggle={this.toggleNewCodeModal}
@@ -231,7 +227,7 @@ class QrCodesComponent extends React.Component {
 				/>
 				<ImportXlsxModal
 					isOpen={this.state.importXlsxModal}
-					toggle={this.toggleImportXlsxModal}
+					close={this.closeImportXlsxModal}
 					currentBrandId={this.props.currentBrandId}
 				/>
 			</div>

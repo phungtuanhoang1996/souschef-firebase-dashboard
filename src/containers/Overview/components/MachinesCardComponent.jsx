@@ -16,8 +16,8 @@ const MachinesCardComponent = (props) => {
 
 	        <Table celled striped style={{marginTop: '5px'}}>
 		        <Table.Header>
-			        <Table.HeaderCell textAlign='center' style={{width: '33%', backgroundColor: '#E3EEF9'}}>Name</Table.HeaderCell>
-			        <Table.HeaderCell textAlign='center' style={{width: '67%', backgroundColor: '#E3EEF9'}}>Last Updated</Table.HeaderCell>
+			        <Table.HeaderCell textAlign='center' style={{width: '33%', backgroundColor: '#C2D4EA'}}>Name</Table.HeaderCell>
+			        <Table.HeaderCell textAlign='center' style={{width: '67%', backgroundColor: '#C2D4EA'}}>Last Updated</Table.HeaderCell>
                 </Table.Header>
 
                 <Table.Body>
