@@ -1,21 +1,13 @@
 import React from 'react';
 import CodeCardComponent from './components/CodeCardComponent';
 import './QrCodesComponent.css';
-import {
-	CardHeader,
-	CardBody,
-} from 'reactstrap';
 import {styled} from 'styled-components';
 import {connect} from 'react-redux'
-import CodeModificationModal from './components/CodeModificationModal'
 import NewCodeModal from './components/NewCodeModal'
 import logger from "../../Utils/logger";
 import ImportCsvModal from "./components/ImportCsvModal";
 import ImportXlsxModal from "./components/ImportXlsxModal"
 import {Segment, Button, Card, Icon} from "semantic-ui-react";
-import csvIcon from '../../resources/icons/csv-icon.svg'
-import xlsIcon from '../../resources/icons/xls-icon.svg'
-
 
 const mapStateToProps = (state) => {
 	return {
@@ -58,41 +50,6 @@ class QrCodesComponent extends React.Component {
 		return sortedMachines
 	}
 
-	showCodeModificationModal = (code, startDate, endDate, useCount) => {
-		console.log('modification modal for ' + code + ' is shown')
-		var currentBrandId = this.props.currentBrandId
-		var eventType = this.state.event
-		this.setState({
-			codeModificationModal: true,
-			codeModificationDetails: {
-				code,
-				startDate,
-				endDate,
-				useCount,
-				currentBrandId,
-				eventType
-			}
-		})
-	}
-
-	showNewCodeModal = () => {
-		var currentBrandId = this.props.currentBrandId
-		var eventType = this.state.event
-		this.setState({
-			newCodeModal: true,
-			newCodeModalDetails: {
-				currentBrandId,
-				eventType
-			}
-		})
-	}
-
-	toggleCodeModificationModal = () => {
-		this.setState({
-			codeModificationModal: !this.state.codeModificationModal,
-			codeModificationDetails: null
-		})
-	}
 
 	toggleNewCodeModal = () => {
 		this.setState({
@@ -139,8 +96,7 @@ class QrCodesComponent extends React.Component {
 					<CodeCardComponent
 						firebaseOngoingCodes={this.props.ongoingCodes}
 						firebaseOffgoingCodes={this.props.offgoingCodes}
-						onModifyButtonClicked={this.showCodeModificationModal}
-						onNewCodeButtonClicked={this.showNewCodeModal}
+						currentBrandId={this.props.currentBrandId}
 					/>
 				</div>
 

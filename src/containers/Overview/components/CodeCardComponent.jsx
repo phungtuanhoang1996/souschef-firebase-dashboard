@@ -3,6 +3,8 @@ import logger from "../../../Utils/logger";
 import { Segment, Table, Button, Input, Icon, Modal } from 'semantic-ui-react'
 import qrScanIcon from '../../../resources/icons/qr-scan.png'
 import QrReader from 'react-qr-reader'
+import CodeModificationModal from "./CodeModificationModal";
+import NewCodeModal from "./NewCodeModal";
 
 export default class CodeCardComponent extends Component {
 	constructor(props) {
@@ -10,6 +12,8 @@ export default class CodeCardComponent extends Component {
 		this.state = {
 			selectedEvent: 'ongoing',
 			filterKeyword: '',
+			codeModificationModal: false,
+			newCodeModal: false,
 			qrScanner: false
 		}
 	}
@@ -71,6 +75,55 @@ export default class CodeCardComponent extends Component {
 				qrScanner: false
 			})
 		}
+	}
+
+	showCodeModificationModal = (code, startDate, endDate, useCount) => {
+		var currentBrandId = this.props.currentBrandId
+		var eventType = this.state.selectedEvent
+		this.setState({
+			codeModificationModal: true,
+			codeModificationDetails: {
+				code,
+				startDate,
+				endDate,
+				useCount,
+				currentBrandId,
+				eventType
+			}
+		})
+		logger('modification modal for ' + code + ' is shown', {
+			code,
+			startDate,
+			endDate,
+			useCount,
+			currentBrandId,
+			eventType
+		})
+	}
+
+	closeCodeModificationModal = () => {
+		this.setState({
+			codeModificationModal: false,
+			codeModificationDetails: null
+		})
+	}
+
+	showNewCodeModal = () => {
+		var currentBrandId = this.props.currentBrandId
+		var eventType = this.state.event
+		this.setState({
+			newCodeModal: true,
+			newCodeModalDetails: {
+				currentBrandId,
+				eventType
+			}
+		})
+	}
+
+	toggleNewCodeModal = () => {
+		this.setState({
+			newCodeModal: !this.state.newCodeModal,
+		})
 	}
 
 	render() {
@@ -136,7 +189,7 @@ export default class CodeCardComponent extends Component {
 												<Table.Cell textAlign='center' verticalAlign='middle' style={{width: '15%'}}>{this.codesTypeTobeShown()[code].use_count}</Table.Cell>
 												<Table.Cell textAlign='center' verticalAlign='middle' style={{width: '15%'}}>
 													<Button size='small' onClick={() => {
-														this.props.onModifyButtonClicked(code,
+														this.showCodeModificationModal(code,
 															this.codesTypeTobeShown()[code].start_date,
 															this.codesTypeTobeShown()[code].end_date,
 															this.codesTypeTobeShown()[code].use_count
@@ -166,6 +219,19 @@ export default class CodeCardComponent extends Component {
 						/>
 					</Modal.Content>
 				</Modal>
+
+				<CodeModificationModal
+					isOpen={this.state.codeModificationModal}
+					close={this.closeCodeModificationModal}
+					details={this.state.codeModificationDetails}
+				/>
+
+				<NewCodeModal
+					isOpen={this.state.newCodeModal}
+					toggle={this.toggleNewCodeModal}
+					details={this.state.newCodeModalDetails}
+				/>
+
 			</Segment>
 		)
 	}

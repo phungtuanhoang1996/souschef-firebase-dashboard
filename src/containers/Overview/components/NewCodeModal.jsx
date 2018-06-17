@@ -19,7 +19,7 @@ import firebase from 'firebase'
 
 import 'react-datepicker/dist/react-datepicker.css';
 
-export default class CodeModificationModal extends React.Component {
+export default class NewCodeModal extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {

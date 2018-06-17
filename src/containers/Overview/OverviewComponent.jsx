@@ -2,16 +2,8 @@ import React from 'react';
 import MachinesCardComponent from './components/MachinesCardComponent';
 import CodeCardComponent from './components/CodeCardComponent';
 import './OverviewComponent.css';
-import {
-	Card,
-	CardHeader,
-	Col,
-	Row
-} from 'reactstrap';
 import {styled} from 'styled-components';
 import {connect} from 'react-redux'
-import CodeModificationModal from './components/CodeModificationModal'
-import NewCodeModal from './components/NewCodeModal'
 import logger from "../../Utils/logger";
 import { Segment } from 'semantic-ui-react'
 
@@ -99,65 +91,11 @@ class OverviewComponent extends React.Component {
 					<CodeCardComponent
 						firebaseOngoingCodes={this.props.ongoingCodes}
 						firebaseOffgoingCodes={this.props.offgoingCodes}
-						onModifyButtonClicked={this.showCodeModificationModal}
-						onNewCodeButtonClicked={this.showNewCodeModal}
+						currentBrandId={this.props.currentBrandId}
 					/>
 				</div>
-				<CodeModificationModal
-					isOpen={this.state.codeModificationModal}
-					toggle={this.toggleCodeModificationModal}
-					details={this.state.codeModificationDetails}
-				/>
-				<NewCodeModal
-
-					isOpen={this.state.newCodeModal}
-					toggle={this.toggleNewCodeModal}
-					details={this.state.newCodeModalDetails}
-				/>
 			</div>
 		);
-	}
-
-	showCodeModificationModal = (code, startDate, endDate, useCount) => {
-		console.log('modification modal for ' + code + ' is shown')
-		var currentBrandId = this.props.currentBrandId
-		var eventType = this.state.event
-		this.setState({
-			codeModificationModal: true,
-			codeModificationDetails: {
-				code,
-				startDate,
-				endDate,
-				useCount,
-				currentBrandId,
-				eventType
-			}
-		})
-	}
-
-	showNewCodeModal = () => {
-		var currentBrandId = this.props.currentBrandId
-		var eventType = this.state.event
-		this.setState({
-			newCodeModal: true,
-			newCodeModalDetails: {
-				currentBrandId,
-				eventType
-			}
-		})
-	}
-
-	toggleCodeModificationModal = () => {
-		this.setState({
-			codeModificationModal: !this.state.codeModificationModal,
-			codeModificationDetails: null
-		})
-	}
-
-	toggleNewCodeModal = () => {
-		this.setState({
-			newCodeModal: !this.state.newCodeModal,
-		})
 	}
 }
 
