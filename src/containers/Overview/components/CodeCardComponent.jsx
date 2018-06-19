@@ -120,9 +120,15 @@ export default class CodeCardComponent extends Component {
 		})
 	}
 
-	toggleNewCodeModal = () => {
+	closeNewCodeModal = () => {
 		this.setState({
-			newCodeModal: !this.state.newCodeModal,
+			newCodeModal: false,
+		})
+	}
+
+	onNewCodeButtonCLick = () => {
+		this.setState({
+			newCodeModal: true
 		})
 	}
 
@@ -157,9 +163,7 @@ export default class CodeCardComponent extends Component {
 						<Button
 
 							color='teal'
-							onClick={() => {
-								this.props.onNewCodeButtonClicked()
-							}}
+							onClick={this.onNewCodeButtonCLick}
 							style={{marginLeft: '5px'}}>Add a new code
 						</Button>
 					</div>
@@ -228,21 +232,12 @@ export default class CodeCardComponent extends Component {
 
 				<NewCodeModal
 					isOpen={this.state.newCodeModal}
-					toggle={this.toggleNewCodeModal}
-					details={this.state.newCodeModalDetails}
+					close={this.closeNewCodeModal}
+					currentBrandId={this.props.currentBrandId}
+					eventType={this.state.selectedEvent}
 				/>
 
 			</Segment>
 		)
-	}
-}
-
-const styles = {
-	tableData: {
-		verticalAlign: "middle",
-		verticalAlign: "middle",
-	},
-	modifyButtonCell: {
-		textAlign: "center"
 	}
 }

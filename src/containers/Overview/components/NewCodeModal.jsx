@@ -1,16 +1,4 @@
-import {
-	Input,
-	InputGroupAddon,
-	InputGroup,
-	Button,
-	Modal,
-	ModalHeader,
-	ModalBody,
-	ModalFooter,
-	Collapse,
-	Card,
-	CardBody
-} from 'reactstrap'
+import { Modal, Button, Input } from 'semantic-ui-react'
 import React from 'react'
 import QrReader from 'react-qr-reader'
 import DatePicker from 'react-datepicker'
@@ -38,138 +26,188 @@ export default class NewCodeModal extends React.Component {
 
 	render() {
 		return (
-			<div>
-				<Modal isOpen={this.props.isOpen} toggle={() => this.props.toggle()} className={this.props.className}>
-					<ModalHeader toggle={() => this.props.toggle()}>Modify QR code</ModalHeader>
-					<ModalBody>
-						<div
-							style={{marginBottom: '5px'}}
-						>
-							Code
-						</div>
+			<Modal
+				open={this.props.isOpen}
+				onClose={this.props.close}
+				dimmer={'blurring'}
+				closeIcon
+				style={{width: '33vmax'}}
+			>
+				<Modal.Header>Add a new QR code</Modal.Header>
+				<Modal.Content>
+					<h5>QR Code</h5>
+					<Input
+						error={this.state.inputValidity.codeIllegalChar}
+						placeholder='QR code...'
+						value={this.state.code}
+						onChange={(event) => {
+							this.handleQRchange(event)
+						}}
+						labelPosition={'right'}
+						label={<Button onClick={() => {this.toggleQrScanner(); this.resetInvalidity('codeIllegalChar')}}>QR Scanner</Button>}
+						style={{marginBottom: '5px', width: '100%'}}
+						onClick={() => {this.resetInvalidity('codeIllegalChar')}}
+					>
+					</Input>
 
-						<InputGroup size='normal' style={{marginBottom: '5px', marginTop: '5px'}} onClick={() => {this.closeInvalidInputCollapse()}}>
-							<Input
-								value={this.state.code}
-								onChange={(event) => {
-									this.handleQRchange(event)
-								}}
-							>
-							</Input>
-							<InputGroupAddon addonType='append'>
-								<Button onClick={() => this.toggleQrScanner()}>QR Scanner</Button>
-							</InputGroupAddon>
-						</InputGroup>
+					<div style={{color: '#CE201E'}}>
+						{this.state.inputValidity.codeIllegalChar
+							? 'Code must be a non-empty string and can not contain ".", "#", "$", "[", or "]"'
+							: <br/>
+						}
+					</div>
 
-						<Collapse isOpen={this.state.helperComponentFocus === 'qr'}>
+					<Modal
+						open={this.state.helperComponentFocus === 'qr'}
+						onClose={() => {
+							this.setState({helperComponentFocus: null})
+						}}
+						size={'mini'}
+						closeIcon
+						centered
+					>
+						<Modal.Content>
 							{this.state.qrCodeScannerRendering ? (<QrReader
 								delay={500}
 								onError={(error) => this.handleQrError(error)}
 								onScan={(result) => this.handleQrResult(result)}
 								style={{width: '100%'}}
 							/>) : null}
-						</Collapse>
+						</Modal.Content>
+					</Modal>
 
-						<div
-							style={{marginBottom: '5px', marginTop: '5px'}}
-						>
-							Start Date
-						</div>
+					<h5>Start Date</h5>
+					<Input
+						error={this.state.inputValidity.startDateFormatWrong}
+						placeholder='Start date (DD/MM/YYYY)...'
+						value={this.state.startDate}
+						onChange={(event) => {
+							this.handleStartDateChange(event)
+						}}
+						labelPosition={'right'}
+						label={<Button onClick={() => this.toggleStartDatePicker()}>Date Picker</Button>}
+						style={{marginBottom: '5px', width: '100%'}}
+						onClick={() => {
+							this.resetInvalidity('startDateFormatWrong')
+						}}
+					>
+					</Input>
 
-						<InputGroup size='normal' style={{marginBottom: '5px', marginTop: '5px'}} onClick={() => {this.closeInvalidInputCollapse()}}>
-							<Input
-								type='text'
-								value={this.state.startDate}
-								onChange={(event) => {
-									this.handleStartDateChange(event)
-								}}
-							>
-							</Input>
-							<InputGroupAddon addonType='append'>
-								<Button onClick={() => this.toggleStartDatePicker()}>Date Picker</Button>
-							</InputGroupAddon>
-						</InputGroup>
+					<div style={{color: '#CE201E'}}>
+						{this.state.inputValidity.startDateFormatWrong
+							? 'Format of start date is wrong. Must be in DD/MM/YYYY'
+							: <br/>
+						}
+					</div>
 
-						<Collapse
-							isOpen={this.state.helperComponentFocus === 'startDatePicker'}
-						>
+					<Modal
+						open={this.state.helperComponentFocus === 'startDatePicker'}
+						onClose={() => {
+							this.setState({helperComponentFocus: null})
+						}}
+						size={'mini'}
+						closeIcon
+						centered
+					>
+						<Modal.Content>
 							<div style={{display: "flex", width: "100%", alignItems: "center", justifyContent: "center"}}>
 								<DatePicker
 									inline
-									selected={(moment(this.state.startDate, 'DD/MM/YYYY').isValid()) ? moment(this.state.startDate, 'DD/MM/YYYY') : moment()}
+									selected={(this.state.startDate) ? moment(this.state.startDate, 'DD/MM/YYYY') : moment()}
 									onChange={date => {
 										this.handleStartDateSelected(date)
 									}}
 								/>
 							</div>
-						</Collapse>
+						</Modal.Content>
+					</Modal>
 
-						<div
-							style={{marginBottom: '5px', marginTop: '5px'}}
-						>
-							End Date
-						</div>
+					<h5>End Date</h5>
+					<Input
+						error={this.state.inputValidity.endDateFormatWrong || this.state.inputValidity.startDateAfterEndDate}
+						placeholder='End date (DD/MM/YYYY)...'
+						value={this.state.endDate}
+						onChange={(event) => {
+							this.handleEndDateChange(event)
+						}}
+						labelPosition={'right'}
+						label={<Button onClick={() => this.toggleEndDatePicker()}>Date Picker</Button>}
+						style={{marginBottom: '5px', width: '100%'}}
+						onClick={() => {
+							this.resetInvalidity('endDateFormatWrong', 'startDateAfterEndDate')
+						}}
+					>
+					</Input>
 
-						<InputGroup size='normal' style={{marginBottom: '5px', marginTop: '5px'}} onClick={() => {this.closeInvalidInputCollapse()}}>
-							<Input
-								value={this.state.endDate}
-								onChange={(event) => {
-									this.handleEndDateChange(event)
-								}}
-							>
-							</Input>
-							<InputGroupAddon addonType='append'>
-								<Button onClick={() => this.toggleEndDatePicker()}>Date Picker</Button>
-							</InputGroupAddon>
-						</InputGroup>
+					<div style={{color: '#CE201E'}}>
+						{this.state.inputValidity.endDateFormatWrong
+							? 'Format of end date is wrong. Must be in DD/MM/YYYY'
+							: null
+						}
+						{this.state.inputValidity.startDateAfterEndDate
+							? 'End date must be after start date'
+							: null
+						}
+						{(!this.state.inputValidity.endDateFormatWrong && !this.state.inputValidity.startDateAfterEndDate)
+							? <br/>
+							: null
+						}
+					</div>
 
-						<Collapse isOpen={this.state.helperComponentFocus === 'endDatePicker'}>
+					<Modal
+						open={this.state.helperComponentFocus === 'endDatePicker'}
+						onClose={() => {
+							this.setState({helperComponentFocus: null})
+						}}
+						size={'mini'}
+						closeIcon
+						centered
+					>
+						<Modal.Content>
 							<div style={{display: "flex", width: "100%", alignItems: "center", justifyContent: "center"}}>
 								<DatePicker
 									inline
-									selected={(moment(this.state.endDate, 'DD/MM/YYYY').isValid()) ? moment(this.state.endDate, 'DD/MM/YYYY') : moment()}
+									selected={(this.state.endDate) ? moment(this.state.endDate, 'DD/MM/YYYY') : moment()}
 									onChange={date => {
 										this.handleEndDateSelected(date)
 									}}
 								/>
 							</div>
-						</Collapse>
+						</Modal.Content>
+					</Modal>
 
-						<div
-							style={{marginBottom: '5px', marginTop: '5px'}}
-						>
-							Use Count
-						</div>
+					<h5>Use Count</h5>
 
-						<Input
-							type="number"
-							value={this.state.useCount}
-							onChange={(event) => {
-								this.handleUseCountChange(event)
-							}}
-							style={{marginBottom: '5px', marginTop: '5px'}}
-							onClick={() => {this.closeInvalidInputCollapse()}}>
-						</Input>
+					<Input
+						type='number'
+						error={this.state.inputValidity.useCountWrongFormat}
+						placeholder='Use count...'
+						value={this.state.useCount}
+						onChange={(event) => {
+							this.handleUseCountChange(event)
+						}}
+						style={{marginBottom: '5px', width: '100%'}}
+						onClick={() => {
+							this.resetInvalidity('useCountWrongFormat')
+						}}
+					>
+					</Input>
 
-						<Collapse isOpen={this.state.invalidInputCollapse}>
-							<Card>
-								<CardBody>
-									{this.state.inputValidity.codeIllegalChar ? <p>- Code must be a non-empty string and can not contain ".", "#", "$", "[", or "]"</p> : null}
-									{this.state.inputValidity.datesFormatWrong ? <p>- Format of dates is wrong. Must be in DD/MM/YYYY</p> : null}
-									{this.state.inputValidity.startDateAfterEndDate ? <p>- End date must be after start date</p> : null}
-									{this.state.inputValidity.useCountWrongFormat ? <p>- Use count must be a positive number</p> : null}
-								</CardBody>
-							</Card>
-						</Collapse>
+					<div style={{color: '#CE201E'}}>
+						{this.state.inputValidity.useCountWrongFormat
+							? 'Use count must be a positive number'
+							: <br/>
+						}
+					</div>
 
-					</ModalBody>
-					<ModalFooter>
-						<Button color="primary" onClick={() => this.handleAddButtonClicked()}>Add</Button>
-						{' '}
-						<Button color="secondary" onClick={() => this.props.toggle()}>Cancel</Button>
-					</ModalFooter>
-				</Modal>
-			</div>
+				</Modal.Content>
+				<Modal.Actions>
+					<Button color="blue" onClick={this.handleAddButtonClicked}>
+						Add
+					</Button>{' '}
+					<Button onClick={this.props.close}>Cancel</Button>
+				</Modal.Actions>
+			</Modal>
 		)
 	}
 
@@ -280,9 +318,17 @@ export default class NewCodeModal extends React.Component {
 		})
 	}
 
-	closeInvalidInputCollapse = () => {
+	resetInvalidity = (...invalidity) => {
+		//logger('invalidity arguments', invalidity)
+		let newInputValidity = Object.assign({}, this.state.inputValidity)
+
+		for (let i = 0; i < invalidity.length; i++) {
+			//logger('reset invalidity arguments', arguments[i])
+			newInputValidity[invalidity[i]] = false
+		}
+
 		this.setState({
-			invalidInputCollapse: false
+			inputValidity: newInputValidity
 		})
 	}
 
@@ -293,13 +339,20 @@ export default class NewCodeModal extends React.Component {
 
 		//check start/end date format
 		//check end date is after start date
-		var startDate = moment(this.state.startDate, "DD/MM/YYYY")
-		var endDate = moment(this.state.endDate, "DD/MM/YYYY")
+		var startDate = moment(this.state.startDate, "DD/MM/YYYY", true)
+		var endDate = moment(this.state.endDate, "DD/MM/YYYY", true)
 
 		if (!startDate.isValid() || !endDate.isValid()) {
 			console.log("Input is validated -> dates format wrong")
-			validationResult = {
-				...validationResult, datesFormatWrong: true, isValid: false
+			if (!startDate.isValid()) {
+				validationResult = {
+					...validationResult, startDateFormatWrong: true, isValid: false
+				}
+			}
+			if (!endDate.isValid()) {
+				validationResult = {
+					...validationResult, endDateFormatWrong: true, isValid: false
+				}
 			}
 		} else if (endDate.isBefore(startDate)) {
 			console.log("Input is validated -> end before start")
@@ -345,28 +398,27 @@ export default class NewCodeModal extends React.Component {
 		} else {
 			console.log("Save changes clicked, input is VALID")
 
-			firebase.database().ref('/brands/' + this.props.details.currentBrandId + '/events/' + this.props.details.eventType + '/codes/' + this.state.code).update({
+			firebase.database().ref('/brands/' + this.props.currentBrandId + '/events/' + this.props.eventType + '/codes/' + this.state.code).set({
 				start_date: this.state.startDate,
 				end_date: this.state.endDate,
 				use_count: this.state.useCount
 			}).then((success) => {
-				this.props.toggle()
-				console.log(success)
+				this.props.close()
+				console.log('success')
 			}, (error) => {
-				console.log(error)
-			})
+				console.log('error')
+			}).then(() => {
+				this.setState({
+					code: '',
+					startDate: '',
+					endDate: '',
+					useCount: '',
+					helperComponentFocus: null,
+					qrCodeScannerRendering: false, // this particular qr scanner must not be rendered while hidden in a Collapse
+					inputValidity: {
 
-			this.setState({
-				code: '',
-				startDate: '',
-				endDate: '',
-				useCount: '',
-				helperComponentFocus: null,
-				qrCodeScannerRendering: false, // this particular qr scanner must not be rendered while hidden in a Collapse
-				invalidInputCollapse: false,
-				inputValidity: {
-
-				}
+					}
+				})
 			})
 		}
 	}
