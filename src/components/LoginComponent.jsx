@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardBody, Form, FormGroup, Label, Input, Button, Col } from 'reactstrap';
+import { Input, Button } from 'semantic-ui-react'
 
 export default class LoginComponent extends React.Component {
     state = {
@@ -22,21 +22,18 @@ export default class LoginComponent extends React.Component {
     render () {
         return (
             <div>
-                <Card>
-                    <CardBody>
-                        <Form>
-                            <FormGroup>
-                                <Label for="usernameInput">Username</Label>
-                                    <Input id="usernameInput" type="text" name="text" placeholder="Username/email" onChange={this.emailHandler} />
-                            </FormGroup>
-                            <FormGroup>
-                                <Label for="passwordInput">Password</Label>
-                                    <Input id="passwordInput" type="password" name="password" placeholder="Enter password" onChange={this.passwordHandler} />
-                            </FormGroup>
-                        </Form>
-                        <Button className="float-right" type='submit' onClick={(event) => this.handleClick(event)}>Log in</Button>
-                    </CardBody>
-                </Card>
+                <h2 align='center'>Souschef Dashboard</h2>
+                <div style={{paddingTop: '5px', paddingBottom: '5px'}}>
+                    <Input onChange={this.emailHandler} style={{width: '100%'}} placeholder={'Username...'}>
+                    </Input>
+                </div>
+	            <div style={{paddingTop: '5px', paddingBottom: '5px'}}>
+                    <Input type='password' onChange={this.passwordHandler} style={{width: '100%'}} placeholder={'Password...'}>
+                    </Input>
+                </div>
+                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', paddingTop: '5px', paddingBottom: '5px'}}>
+                    <Button color='teal' onClick={this.handleClick}>Login</Button>
+                </div>
             </div>
         );
     }

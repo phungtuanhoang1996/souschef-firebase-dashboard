@@ -1,6 +1,5 @@
 import React from 'react';
 import  LoginComponent  from '../components/LoginComponent';
-import {Button, Col, Modal, ModalBody, ModalFooter, ModalHeader} from 'reactstrap';
 import "./Home.css";
 import firebase from 'firebase'
 import {connect} from "react-redux";
@@ -9,6 +8,7 @@ import * as actionCreators from "../actions/actionCreators";
 var bcrypt = require('bcryptjs');
 import { withRouter } from 'react-router-dom'
 import logger from '../Utils/logger'
+import { Segment, Modal, Button } from 'semantic-ui-react'
 
 class Home extends React.Component {
     state = {
@@ -46,9 +46,9 @@ class Home extends React.Component {
         }
     }
 
-    toggleErrorPopup = () => {
+    closeErrorPopup = () => {
         this.setState({
-            errorPopup: !this.state.errorPopup
+            errorPopup: false
         });
     }
 
@@ -69,24 +69,22 @@ class Home extends React.Component {
     render () {
 
         const errorModal = 
-        <Modal isOpen={this.state.errorPopup} toggle={this.toggleErrorPopup}>
-            <ModalHeader toggle={this.toggleErrorPopup}>Login Error</ModalHeader>
-            <ModalBody>
+        <Modal open={this.state.errorPopup} onClose={this.closeErrorPopup} closeIcon dimmer={'blurring'}>
+            <Modal.Header>Login Error</Modal.Header>
+            <Modal.Content>
                 {this.state.errorMessage}
                 <br/>
                 {this.state.errorMessage === "Invalid username/password." ? 'Please try again or click here to reset password' :  null}
-            </ModalBody>
-            <ModalFooter>
-                <Button color="secondary" onClick={this.toggleErrorPopup}>Close</Button>
-            </ModalFooter>
+            </Modal.Content>
+            <Modal.Actions>
+                <Button color="secondary" onClick={this.closeErrorPopup}>Close</Button>
+            </Modal.Actions>
         </Modal>;
         return (
-            <div>
-                <div className="logincomponent">
-                    <Col sm={4}>
-                        <LoginComponent handleLogin={this.handleLogin} />
-                    </Col>
-                </div>
+            <div style={{width: '100vw', height: '100vh', backgroundColor: '#4C6079', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                <Segment raised style={{width: '33vw'}}>
+                    <LoginComponent handleLogin={this.handleLogin}/>
+                </Segment>
                 {errorModal}
             </div>
 
