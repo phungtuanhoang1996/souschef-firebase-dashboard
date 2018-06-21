@@ -4,11 +4,8 @@ import {
 	CardHeader,
 	Carousel,
 	CarouselItem,
-	Modal,
 	ModalBody,
 	ModalFooter,
-	Button,
-	Progress
 } from 'reactstrap'
 import firebase from 'firebase'
 import React from 'react'
@@ -16,112 +13,171 @@ import Dropzone from 'react-dropzone'
 import logger from '../../../Utils/logger'
 import Papa from 'papaparse'
 import moment from "moment";
+import {Modal, Button, Image, Progress} from 'semantic-ui-react'
+import csvExample from '../../../resources/images/csv-example.png'
+import csvIcon from '../../../resources/icons/csv-icon.svg'
 
 export default class ImportCsvModal extends React.Component {
-	numberOfStages = 3
-
 	constructor(props) {
 		super(props)
 		this.state = {
-			currentStage: 0,
+			currentStage: 'INTRO', // INTRO -> CHOOSE_FILE -> PARSE_AND_UPLOAD
 			uploadedFile: null,
-			status: ''
+			status: 'STANDBY', // STANDBY -> PARSING -> UPLOADING -> DONE
+			errorType: null,
+			errorDetails: null,
 		}
 	}
 
 	componentWillReceiveProps = (nextProps) => {
 		if (this.props.isOpen && !nextProps.isOpen) {
-			setTimeout(() => {
-				this.setState({
-					currentStage: 0,
-					uploadedFile: null,
-					status: ''
-				})
-			}, 1000)
+			logger('componentWillReceiveProps is fired')
+			this.setState({
+				currentStage: 'INTRO', // INTRO -> CHOOSE_FILE -> PARSE_AND_UPLOAD
+				uploadedFile: null,
+				status: 'STANDBY', // STANDBY -> PARSING -> UPLOADING -> DONE
+				errorType: null,
+				errorDetails: null,
+			})
 		}
 	}
 
 	next = () => {
+		let nextStage
+
+		if (this.state.currentStage === 'INTRO') nextStage = 'CHOOSE_FILE'
+		if (this.state.currentStage === 'CHOOSE_FILE') nextStage = 'PARSE_AND_UPLOAD'
+		if (this.state.currentStage === 'PARSE_AND_UPLOAD') return
+
 		this.setState({
-			currentStage: this.state.currentStage < this.numberOfStages - 1
-						? this.state.currentStage + 1 : this.state.currentStage
+			currentStage: nextStage
 		})
 	}
 
 	previous = () => {
+		let lastStage
+
+		if (this.state.currentStage === 'INTRO') return
+		if (this.state.currentStage === 'CHOOSE_FILE') lastStage = 'INTRO'
+		if (this.state.currentStage === 'PARSE_AND_UPLOAD') lastStage = 'CHOOSE_FILE'
 		this.setState({
-			currentStage: this.state.currentStage > 0
-						? this.state.currentStage - 1 : this.state.currentStage
+			currentStage: lastStage
 		})
 	}
 
 	getCurrentStage = () => {
 		switch (this.state.currentStage) {
-			case 0: {
+			case 'INTRO': {
 				return (
-					<div>
-						<p>This is a feature that allows you to import codes in a CSV file</p>
-						<p>Each row in the CSV file must follow this format</p>
-						<p>[QR][Start Date][End Date][Use Count]</p>
-						<p>QR cannot contain ".", "#", "$", "[", or "]"</p>
-						<p>Start and end dates must be in DD/MM/YYYY</p>
-						<p>Use count must be a positive number</p>
-						<p>For example: qrcode,01/01/2000,02/01/2000,5</p>
-					</div>
-				)
-			}
-			case 1: {
-				return (
-					<div>
-						<p>Drag the CSV file below or click to choose file to upload</p>
-						<Dropzone accept=".csv" multiple={false} onDrop={this.onDrop}/>
-						<p>Uploaded file: {this.state.uploadedFile === null ? 'None' : this.state.uploadedFile.name}</p>
-					</div>
-				)
-			}
-			case 2: {
-				return (
-					<div>
-						<div style={{display: 'flex', alignItems: "center", justifyContent: "center"}}>
-							{!this.state.status.includes('done')
-								? <Progress animated value={100} style={{width: "33%"}}/>
-								: null
-							}
-							{this.state.status === 'done'
-								? <Progress striped color="success" value={100} style={{width: "33%"}}/>
-								: null
-							}
-							{this.state.status === 'done with error'
-								? <Progress striped color="warning" value={100} style={{width: "33%"}}/>
-								: null
-							}
+					<div style={{
+						display: 'table'
+					}}>
+						<Image src={csvExample} rounded bordered alt='example' style={{height: '27vmin', objectFit: 'contain'}}>
+						</Image>
+
+						<div style={{display: 'table-cell', padding:'auto', paddingLeft: '20px', verticalAlign: 'middle', textAlign: 'left'}}>
+							<h3>Before you upload a CSV file...</h3>
+							<div className="ui list">
+								<a className="item">
+									<i className="right triangle icon"></i>
+									<div className="content">
+										<div className="description">Each row in the CSV file must have 4 values in the following order:</div>
+										<div className="description"><b>QR - Start Date - End Date - Use Count</b></div>
+										<div className='description'>The values are separated by the <b>,</b> character</div>
+									</div>
+								</a>
+
+								<a className="item">
+									<i className="right triangle icon"></i>
+									<div className="content">
+										<div className="description">A blank new line at end of file will be treated as one row but will not be parsed</div>
+									</div>
+								</a>
+
+								<a className="item">
+									<i className="right triangle icon"></i>
+									<div className="content">
+										<div className="description">QR cannot contain ".", "#", "$", "[", or "]"</div>
+									</div>
+								</a>
+
+								<a className="item">
+									<i className="right triangle icon"></i>
+									<div className="content">
+										<div className="description">Start and end dates must be in DD/MM/YYYY</div>
+									</div>
+								</a>
+
+								<a className="item">
+									<i className="right triangle icon"></i>
+									<div className="content">
+										<div className="description">Use count must be a positive number</div>
+									</div>
+								</a>
 							</div>
-						<div style={{display: 'flex', alignItems: "center", justifyContent: "center"}}>
-							{this.state.status === '' ? <p>Parsing...</p> : null}
-							{this.state.status === 'upload_firebase' ? <p>Uploading...</p> : null}
-							{this.state.status === 'done' ? <p>Done!</p> : null}
-							{this.state.status === 'done with error' ? <p>Done with errors</p>: null}
 						</div>
-						{ (this.state.status === 'upload_firebase' || this.state.status.includes('done')) ?
-							<div style={{display: 'flex', alignItems: "center", justifyContent: "center"}}>
-								<p>Parsed CSV file</p>
-							</div> : null
-						}
-						{ (this.state.status === 'done') ?
-							<div style={{display: 'flex', alignItems: "center", justifyContent: "center"}}>
-								<p>Uploaded all codes to database</p>
-							</div> : null
-						}
-						{ (this.state.status === 'done with error') ?
-							<div>
-								<div style={{display: 'flex', alignItems: "center", justifyContent: "center"}}>
-									<p>Uploaded {this.state.validRows} code(s) to database</p>
+					</div>
+				)
+			}
+			case 'CHOOSE_FILE': {
+				return (
+					<div style={{display: 'table', margin: 'auto'}}>
+						<div style={{display: 'table-cell'}}>
+							<Dropzone onDrop={this.onDrop}>
+								<img src={csvIcon} alt='xlsx icon' style={{height: '200px', objectFit: 'contain', padding: '50px'}}/>
+							</Dropzone>
+						</div>
+						<div style={{display: 'table-cell', padding: 'auto', paddingLeft: '20px', verticalAlign: 'middle', textAlign: 'left'}}>
+							<h3 style={{padding: '0px'}}>Drag a .CSV file into the box or click to choose a file to upload</h3>
+							<br/>
+							<p style={{padding: '0px'}}>Uploaded file: {this.state.uploadedFile === null ? 'None' : this.state.uploadedFile.name}</p>
+						</div>
+					</div>
+				)
+			}
+			case 'PARSE_AND_UPLOAD': {
+				let status = this.state.status
+				let errorType = this.state.errorType
+				return (
+					<div style={{height: '100%'}}>
+						{/* Loader*/}
+						{status !== 'DONE'
+							? (
+								<div className="ui active inverted dimmer" style={{display: 'flex', alignItems: "center", justifyContent: "center"}}>
+									<div className="ui active centered text inline loader">
+										{status === 'PARSING' ? 'Parsing': null}
+										{status === 'UPLOADING' ? 'Uploading' : null}
+									</div>
 								</div>
-								<div style={{display: 'flex', alignItems: "center", justifyContent: "center"}}>
-									<p>{this.state.invalidRows} row(s) from .CSV file were invalid</p>
-								</div>
-							</div> : null
+							)
+							: null
 						}
+
+						{/*/!* Status under progress bar *!/*/}
+						{/*<div style={{display: 'flex', alignItems: "center", justifyContent: "center"}}>*/}
+						{/*{status === 'PARSING' ? <p>Parsing...</p> : null}*/}
+						{/*{status === 'UPLOADING' ? <p>Uploading...</p> : null}*/}
+						{/*{status === 'DONE' && errorType === null ? <p>Done!</p> : null}*/}
+						{/*{status === 'DONE' && errorType !== null ? <p>Done with errors</p> : null}*/}
+						{/*</div>*/}
+
+						{/* Details */}
+						<div style={{display: 'table', height: '100%'}}>
+							{status === 'DONE' && !errorType ? <p>Successful uploaded all codes</p> : null}
+							{status === 'DONE' && errorType === 'INVALID_DATA_EXISTS'
+								? (
+									<div style={{display: 'table-cell', textAlign:' center', verticalAlign: 'middle'}}>
+										<h4>{"Uploaded " + this.state.errorDetails.valid + " codes"}</h4>
+										<h4>{this.state.errorDetails.invalid +
+										" row" +
+										(this.state.errorDetails.invalid > 1 ? 's were' : ' was') + " invalid"}</h4>
+									</div>
+								) : null
+							}
+							{status === 'DONE' && errorType && errorType !== 'INVALID_DATA_EXISTS'
+								? <p>{this.state.errorDetails}</p> : null
+							}
+						</div>
 					</div>
 				)
 			}
@@ -129,19 +185,21 @@ export default class ImportCsvModal extends React.Component {
 	}
 
 	onDrop = (acceptedFiles, rejectedFiles) => {
-		logger('Dropzone', acceptedFiles[0])
-		if (acceptedFiles[0] && acceptedFiles[0] !== null) {
-			this.setState({
-				uploadedFile: acceptedFiles[0]
-			})
-		}
+		logger('Dropzone', acceptedFiles)
+		this.setState({
+			uploadedFile: acceptedFiles[0]
+		})
 	}
 
 	parseAndUpload = () => {
+		this.setState({
+			status: 'PARSING'
+		})
+
 		Papa.parse(this.state.uploadedFile, {
 			complete: results => {
 				this.setState({
-					status: 'upload_firebase'
+					status: 'UPLOADING'
 				})
 
 				logger("papaparse results", results)
@@ -152,6 +210,8 @@ export default class ImportCsvModal extends React.Component {
 				var invalidRows = 0
 
 				Object.keys(results.data).map(key => {
+					if (results.data[key].length === 1 && results.data[key][0] === '') return
+
 					let code = results.data[key][0]
 					let startDate = results.data[key][1]
 					let endDate = results.data[key][2]
@@ -178,11 +238,20 @@ export default class ImportCsvModal extends React.Component {
 				firebase.database().ref('/brands/' + this.props.currentBrandId + '/events/ongoing/codes').update(
 					firebaseUploadData
 				).then(success => {
-					this.setState({
-						status: (invalidRows === 0) ? 'done' : 'done with error',
-						validRows: validRows,
-						invalidRows: invalidRows
-					})
+					if (invalidRows === 0) {
+						this.setState({
+							status: 'DONE'
+						})
+					} else {
+						this.setState({
+							status: 'DONE',
+							errorType: 'INVALID_DATA_EXISTS',
+							errorDetails: {
+								invalid: invalidRows,
+								valid: validRows
+							}
+						})
+					}
 					logger('parsed and uploaded to firebase')
 				}, error => {
 					logger('failed to parse and upload to firebase', error.message)
@@ -193,17 +262,20 @@ export default class ImportCsvModal extends React.Component {
 
 	getNextButton = () =>{
 		switch (this.state.currentStage) {
-			case 0: return (
-				<Button color="primary" onClick={this.next}>Next</Button>
+			case 'INTRO': return (
+				<Button color="blue" onClick={this.next}>Next</Button>
 			)
-			case 1: return (
-				<Button color="success" onClick={() => {
-					if (this.state.currentStage === 1) this.parseAndUpload()
-					this.next()
-				}}>Upload</Button>
+			case 'CHOOSE_FILE': return (
+				<Button color={this.state.uploadedFile !== null ? 'green' : ''}
+				        onClick={() => {
+					        if (this.state.uploadedFile !== null) this.next()
+					        this.parseAndUpload()
+				        }}
+				        disabled={this.state.uploadedFile === null}
+				>Upload</Button>
 			)
-			case 2: return (
-				<Button color="success" onClick={this.props.toggle}>Close</Button>
+			case 'PARSE_AND_UPLOAD': return (
+				<Button onClick={this.props.close}>Close</Button>
 			)
 			default: return (
 				<Button color="primary" onClick={this.next}>Next</Button>
@@ -213,17 +285,17 @@ export default class ImportCsvModal extends React.Component {
 
 	getPreviousButton = () => {
 		switch (this.state.currentStage) {
-			case 0: return null
-			case 1: return (
-				<Button color="primary" onClick={() => {
+			case 'INTRO': return null
+			case 'CHOOSE_FILE': return (
+				<Button onClick={() => {
 					this.previous()
 					this.setState({
 						uploadedFile: null
 					})
 				}}>Back</Button>
 			)
-			case 2: return (
-				<Button color="primary" onClick={() => {
+			case 'PARSE_AND_UPLOAD': return (
+				<Button color="blue" onClick={() => {
 					this.previous()
 					this.setState({
 						uploadedFile: null,
@@ -232,7 +304,7 @@ export default class ImportCsvModal extends React.Component {
 				}}>Import another</Button>
 			)
 			default: return (
-				<Button color="primary" onClick={this.next}>Next</Button>
+				<Button onClick={this.next}>Next</Button>
 			)
 		}
 	}
@@ -253,8 +325,8 @@ export default class ImportCsvModal extends React.Component {
 
 		//check start/end date format
 		//check end date is after start date
-		var startDate = moment(_startDate, "DD/MM/YYYY")
-		var endDate = moment(_endDate, "DD/MM/YYYY")
+		var startDate = moment(_startDate, "DD/MM/YYYY", true)
+		var endDate = moment(_endDate, "DD/MM/YYYY", true)
 
 		if (!startDate.isValid() || !endDate.isValid()) {
 			console.log("Input is validated -> dates format wrong")
@@ -293,15 +365,19 @@ export default class ImportCsvModal extends React.Component {
 
 	render() {
 		return (
-			<Modal size='lg' style={{height: '50%'}} isOpen={this.props.isOpen} toggle={() => this.props.toggle()}>
-				<ModalHeader toggle={this.props.toggle}>Bulk import from CSV</ModalHeader>
-				<ModalBody style={{height: '500px'}}>
+			<Modal
+				dimmer='blurring'
+				open={this.props.isOpen}
+				closeIcon onClose={this.props.close}
+			>
+				<Modal.Header>Bulk import from CSV file</Modal.Header>
+				<Modal.Content align='center' style={{height: '33vh', width: '50vw', margin: 'auto'}}>
 					{this.getCurrentStage()}
-				</ModalBody>
-				<ModalFooter>
+				</Modal.Content>
+				<Modal.Actions>
 					{this.getPreviousButton()}
 					{this.getNextButton()}
-				</ModalFooter>
+				</Modal.Actions>
 			</Modal>
 		)
 	}

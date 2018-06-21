@@ -63,9 +63,9 @@ class QrCodesComponent extends React.Component {
 		})
 	}
 
-	toggleImportCsvModal = () => {
+	closeImportCsvModal = () => {
 		this.setState({
-			importCsvModal: !this.state.importCsvModal
+			importCsvModal: false
 		})
 	}
 
@@ -178,7 +178,7 @@ class QrCodesComponent extends React.Component {
 				/>
 				<ImportCsvModal
 					isOpen={this.state.importCsvModal}
-					toggle={this.toggleImportCsvModal}
+					close={this.closeImportCsvModal}
 					currentBrandId={this.props.currentBrandId}
 				/>
 				<ImportXlsxModal

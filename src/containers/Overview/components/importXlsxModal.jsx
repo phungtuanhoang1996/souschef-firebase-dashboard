@@ -81,8 +81,7 @@ export default class ImportXlsxModal extends React.Component {
 									<i className="right triangle icon"></i>
 									<div className="content">
 										<div className="description">Each row in the Excel sheet must have 4 cells in the following order:</div>
-										<div className="description"><b>QR - Start Dat
-											e - End Date - Use Count</b></div>
+										<div className="description"><b>QR - Start Date - End Date - Use Count</b></div>
 									</div>
 								</a>
 
@@ -160,8 +159,9 @@ export default class ImportXlsxModal extends React.Component {
 								? (
 									<div style={{display: 'table-cell', textAlign:' center', verticalAlign: 'middle'}}>
 										<h4>{"Uploaded " + this.state.errorDetails.valid + " codes"}</h4>
-										<h4>{this.state.errorDetails.invalid + " rows were invalid"}</h4>
-									</div>
+										<h4>{this.state.errorDetails.invalid +
+										" row" +
+										(this.state.errorDetails.invalid > 1 ? 's were' : ' was') + " invalid"}</h4>									</div>
 								) : null
 							}
 							{status === 'DONE' && errorType && errorType !== 'INVALID_DATA_EXISTS'
@@ -340,8 +340,8 @@ export default class ImportXlsxModal extends React.Component {
 
 		//check start/end date format
 		//check end date is after start date
-		var startDate = moment(_startDate, "DD/MM/YYYY")
-		var endDate = moment(_endDate, "DD/MM/YYYY")
+		var startDate = moment(_startDate, "DD/MM/YYYY", true)
+		var endDate = moment(_endDate, "DD/MM/YYYY", true)
 
 		if (!startDate.isValid() || !endDate.isValid()) {
 			console.log("Input is validated -> dates format wrong")
@@ -385,7 +385,6 @@ export default class ImportXlsxModal extends React.Component {
 				dimmer='blurring'
 				open={this.props.isOpen}
 				closeIcon onClose={this.props.close}
-				closeOnDimmerClick={false}
 			>
 				<Modal.Header>Bulk import from Excel sheet</Modal.Header>
 				<Modal.Content align='center' style={{height: '33vh', width: '50vw', margin: 'auto'}}>
