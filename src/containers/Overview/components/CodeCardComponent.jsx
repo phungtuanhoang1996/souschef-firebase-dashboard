@@ -180,7 +180,7 @@ export default class CodeCardComponent extends Component {
 						</Table>
 					</div>
 
-					<div style={{flex: 'auto', overflowY: 'scroll', marginTop: '0px', marginBottom: '10px'}}>
+					<div style={{flex: 'auto', height: '100px', overflowY: 'scroll', marginTop: '0px', marginBottom: '10px'}}>
 						<Table celled striped>
 							<Table.Body>
 								{
