@@ -93,7 +93,7 @@ class Home extends React.Component {
 
     componentDidMount() {
         if (this.props.isLoggedIn) {
-	        this.props.history.push('/dashboard');
+	        //this.props.history.push('/dashboard');
         }
     }
 }

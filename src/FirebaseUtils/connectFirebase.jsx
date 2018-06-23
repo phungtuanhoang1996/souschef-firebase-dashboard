@@ -45,6 +45,12 @@ const connectFirebase = (WrappedComponent) => {
 							this.props.setOffgoingCodes(snapshot.val())
 						})
 
+						var firebaseCodesRef = firebase.database().ref('/brands/' + brandId + '/events/');
+						this.addListener(firebaseCodesRef)
+						firebaseCodesRef.on('value', snapshot => {
+							this.props.setCodes(snapshot.val())
+						})
+
 						var firebaseAccessibleMachines = firebase.database().ref('/brands/' + brandId + '/machines')
 						this.addListener(firebaseAccessibleMachines)
 

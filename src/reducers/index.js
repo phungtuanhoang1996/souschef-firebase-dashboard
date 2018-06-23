@@ -6,8 +6,7 @@ const defaultState = {
 	currentUser: null,
 	currentUserUid: null,
 	currentBrandId: null,
-	ongoingCodes: [],
-	offgoingCodes: [],
+	codes: {},
 	machinesData: {}
 }
 
@@ -56,6 +55,18 @@ const rootReducer = (state, action) => {
 			return {
 				...state,
 				offgoingCodes: action.offgoingCodes
+			}
+		}
+
+		case 'SET_CODES': {
+			logger('Store after reduce', {
+				...state,
+				codes: action.codes
+			})
+
+			return {
+				...state,
+				codes: action.codes
 			}
 		}
 

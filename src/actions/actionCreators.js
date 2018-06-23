@@ -14,8 +14,15 @@ export function login(currentUser, currentUserUid) {
 export function logout() {
 	//logger('A logout action is created')
 
+	return {
+		type: 'ACCT_LOGOUT'
+	}
+}
+
+export const setCodes = (codes) => {
     return {
-        type: 'ACCT_LOGOUT'
+        type: 'SET_CODES',
+		codes: codes
     }
 }
 

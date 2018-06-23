@@ -1,14 +1,6 @@
 import { createStore } from 'redux';
 import rootReducer from './reducers/index';
 
-// const defaultState = {
-//     authToken: "",
-//     isLoggedIn: false,
-//     currentUser: "",
-//     currentBrandName: "",
-//     currentBrandId: ""
-// }
-
 const defaultState = {
     authToken: "",
     isLoggedIn: false,
@@ -16,8 +8,7 @@ const defaultState = {
     currentUserUid: null,
     currentBrandName: null,
     currentBrandId: null,
-    ongoingCodes: [],
-    offgoingCodes: [],
+    codes: {},
     machinesData: {}
 }
 
