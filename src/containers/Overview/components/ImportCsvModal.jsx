@@ -1,12 +1,3 @@
-import {
-	Card,
-	ModalHeader,
-	CardHeader,
-	Carousel,
-	CarouselItem,
-	ModalBody,
-	ModalFooter,
-} from 'reactstrap'
 import firebase from 'firebase'
 import React from 'react'
 import Dropzone from 'react-dropzone'

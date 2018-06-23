@@ -5,23 +5,21 @@ import {bindActionCreators} from "redux";
 import * as actionCreators from "../actions/actionCreators";
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
-import logger from "../Utils/logger";
 import QrCodesComponent from "./Overview/QrCodesComponent";
-import { Sidebar, Segment } from 'semantic-ui-react'
 
 class Dashboard extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            selectedItem: 'codes'
+            selectedItem: 'overview'
         }
     }
 
     componentToDisplay = (selectedItem) => {
         switch (selectedItem) {
             case 'overview': return (<OverviewComponent/>)
-            case 'machines': return null //this needs to be done
-            case 'codes': return (<QrCodesComponent/>) //this needs to be done
+            case 'machines': return null
+            case 'codes': return (<QrCodesComponent/>)
         }
     }
 
