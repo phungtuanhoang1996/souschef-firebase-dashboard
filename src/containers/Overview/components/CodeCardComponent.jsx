@@ -24,7 +24,7 @@ export default class CodeCardComponent extends Component {
 		else return {}
 	}
 
-	totalCodesCount = () => (!this.props.codes) ? 0 : Object.keys(this.props.codes).length
+	totalCodesCount = () => (!this.props.codes || !this.props.selectedEvent) ? 0 : Object.keys(this.props.codes[this.props.selectedEvent]['codes']).length
 
 	changeSelectedEvent = (event) => {
 		this.setState({
@@ -153,9 +153,22 @@ export default class CodeCardComponent extends Component {
 				display: 'flex',
 				flexDirection: 'column'
 			}}>
-				<h2 style={{padding: '10px', paddingLeft: '20px', margin: '0px'}}>
-					Event Codes: {this.totalCodesCount()} code{this.totalCodesCount() > 2 ? 's' : null} registered
-				</h2>
+				{
+					!this.props.codes || !this.props.selectedEvent
+						?
+							(
+								<h2 style={{padding: '10px', paddingLeft: '20px', margin: '0px'}}>
+									Event Codes: Loading...
+								</h2>
+							)
+						:
+							(
+								<h2 style={{padding: '10px', paddingLeft: '20px', margin: '0px'}}>
+									Event Codes: {this.totalCodesCount()} code{this.totalCodesCount() > 1 ? 's' : null} registered
+									for current event - {this.props.selectedEvent}
+								</h2>
+							)
+				}
 				<div style={{flex: '1', paddingLeft: '20px', paddingRight: '20px', display: 'flex', flexDirection: 'column'}}>
 					<div style={{display: 'flex', width: "100%", flex: 'none'}}>
 						<Button

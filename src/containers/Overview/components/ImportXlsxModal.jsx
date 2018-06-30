@@ -5,11 +5,12 @@ import logger from '../../../Utils/logger'
 import Papa from 'papaparse'
 import XLSX from 'xlsx'
 import moment from "moment/moment";
-import {Modal, Button, Image, Progress} from 'semantic-ui-react'
+import {Modal, Button, Image, Progress, Dropdown} from 'semantic-ui-react'
 import xlsxExample from '../../../resources/images/xlsx-example.png'
 import xlsxIcon from '../../../resources/icons/xls-icon.svg'
+import {connect} from "react-redux";
 
-export default class ImportXlsxModal extends React.Component {
+class ImportXlsxModal extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
@@ -18,6 +19,7 @@ export default class ImportXlsxModal extends React.Component {
 			status: 'STANDBY', // STANDBY -> PARSING -> UPLOADING -> DONE
 			errorType: null,
 			errorDetails: null,
+			uploadingEvent: this.props.currentEvent
 		}
 	}
 
@@ -30,6 +32,7 @@ export default class ImportXlsxModal extends React.Component {
 				status: 'STANDBY', // STANDBY -> PARSING -> UPLOADING -> DONE
 				errorType: null,
 				errorDetails: null,
+				uploadingEvent: this.props.currentEvent
 			})
 		}
 	}
@@ -120,8 +123,26 @@ export default class ImportXlsxModal extends React.Component {
 						</div>
 						<div style={{display: 'table-cell', padding: 'auto', paddingLeft: '20px', verticalAlign: 'middle', textAlign: 'left'}}>
 							<h3 style={{padding: '0px'}}>Drag a .XLS / .XLSX file into the box or click to choose a file to upload</h3>
-							<br/>
 							<p style={{padding: '0px'}}>Uploaded file: {this.state.uploadedFile === null ? 'None' : this.state.uploadedFile.name}</p>
+							<br/>
+							<p>
+								<span>
+									{"Upload to the following event: "}
+									<Dropdown inline text={this.state.uploadingEvent}>
+										<Dropdown.Menu>
+											{
+												this.props.events.map(event => {
+													return (
+														<Dropdown.Item onClick={() => {this.setState({uploadingEvent: event})}}>
+															{event}
+														</Dropdown.Item>
+													)
+												})
+											}
+										</Dropdown.Menu>
+									</Dropdown>
+								</span>
+							</p>
 						</div>
 					</div>
 				)
@@ -247,7 +268,7 @@ export default class ImportXlsxModal extends React.Component {
 
 					logger('firebase data upload object', firebaseUploadData)
 
-					firebase.database().ref('/brands/' + this.props.currentBrandId + '/events/ongoing/codes').update(
+					firebase.database().ref('/brands/' + this.props.currentBrandId + '/events/' + this.state.uploadingEvent + '/codes').update(
 						firebaseUploadData
 					).then(success => {
 						if (invalidRows === 0) {
@@ -398,3 +419,12 @@ export default class ImportXlsxModal extends React.Component {
 		)
 	}
 }
+
+const mapStateToProps = (state) => {
+	return {
+		events: Object.keys(state.codes),
+		currentEvent: state.currentEvent
+	}
+}
+
+export default connect(mapStateToProps, null)(ImportXlsxModal)

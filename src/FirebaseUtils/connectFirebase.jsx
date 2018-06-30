@@ -38,7 +38,7 @@ const connectFirebase = (WrappedComponent) => {
 						firebaseCodesRef.on('value', snapshot => {
 							this.props.setCodes(snapshot.val())
 
-							if (snapshot.val()) this.props.setCurrentEvent(Object.keys(snapshot.val())[0])
+							if (!this.props.currentEvent) this.props.setCurrentEvent(Object.keys(snapshot.val())[0])
 						})
 
 						var firebaseAccessibleMachines = firebase.database().ref('/brands/' + brandId + '/machines')
@@ -101,7 +101,13 @@ const connectFirebase = (WrappedComponent) => {
 		return bindActionCreators(actionCreators, dispatch);
 	}
 
-	return connect(null, mapDispatchToProps)(FirebaseConnector)
+	const mapStateToProps = (state) => {
+		return {
+			currentEvent: state.currentEvent
+		}
+	}
+
+	return connect(mapStateToProps, mapDispatchToProps)(FirebaseConnector)
 }
 
 export default connectFirebase
