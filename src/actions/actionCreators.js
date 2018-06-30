@@ -2,7 +2,7 @@ import logger from '../Utils/logger'
 
 // Stores the authentication token delivered by Firebase Auth
 export function login(currentUser, currentUserUid) {
-	//logger('A login action is created')
+	logger('A login action is created')
 
     return {
         type: 'ACCT_LOGIN',
@@ -12,7 +12,7 @@ export function login(currentUser, currentUserUid) {
 }
 
 export function logout() {
-	//logger('A logout action is created')
+	logger('A logout action is created')
 
 	return {
 		type: 'ACCT_LOGOUT'
@@ -27,7 +27,7 @@ export const setCodes = (codes) => {
 }
 
 export const setCurrentBrandId = (brandId) => {
-	//logger('A set current brand id action is created')
+	logger('A set current brand id action is created')
 
 	return {
 		type: 'SET_BRAND_ID',
@@ -36,7 +36,7 @@ export const setCurrentBrandId = (brandId) => {
 }
 
 export const setOngoingCodes = (ongoingCodes) => {
-	//logger('A set ongoing codes action is created')
+	logger('A set ongoing codes action is created')
 
 	return {
 		type: 'SET_ONGOING_CODES',
@@ -45,7 +45,7 @@ export const setOngoingCodes = (ongoingCodes) => {
 }
 
 export const setOffgoingCodes = (offgoingCodes) => {
-	//logger('A set offgoing codes action is created')
+	logger('A set offgoing codes action is created')
 
 	return {
 		type: 'SET_OFFGOING_CODES',
@@ -54,7 +54,7 @@ export const setOffgoingCodes = (offgoingCodes) => {
 }
 
 export const updateMachinesData = (machineId, machineData) => {
-	//logger('An update machine data action is created')
+	logger('An update machine data action is created')
 
 	return {
 		type: 'UPDATE_MACHINES_DATA',
@@ -64,10 +64,19 @@ export const updateMachinesData = (machineId, machineData) => {
 }
 
 export const setCurrentBrandName = (brandName) => {
-	//logger('A set current brand name action is created')
+	logger(brandName, 'A set current brand name action is created')
 
 	return {
 		type: 'SET_CURRENT_BRAND_NAME',
 		currentBrandName: brandName
+	}
+}
+
+export const setCurrentEvent = (event) => {
+	logger(event, 'A set current brand event action is created')
+
+	return {
+		type: 'SET_CURRENT_EVENT',
+		currentEvent: event
 	}
 }

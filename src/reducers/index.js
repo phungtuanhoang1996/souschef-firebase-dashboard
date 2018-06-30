@@ -106,8 +106,16 @@ const rootReducer = (state, action) => {
 			}
 		}
 
+		case 'SET_CURRENT_EVENT': {
+
+			return {
+				...state,
+				currentEvent: action.currentEvent
+			}
+		}
+
 		default:
-			return defaultState
+			return state
 	}
 }
 

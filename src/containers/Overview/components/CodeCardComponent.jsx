@@ -1,30 +1,30 @@
 import React, {Component} from 'react';
 import logger from "../../../Utils/logger";
-import { Segment, Table, Button, Input, Icon, Modal } from 'semantic-ui-react'
+import { Segment, Table, Button, Input, Dropdown, Modal } from 'semantic-ui-react'
 import qrScanIcon from '../../../resources/icons/qr-scan.png'
 import QrReader from 'react-qr-reader'
 import CodeModificationModal from "./CodeModificationModal";
 import NewCodeModal from "./NewCodeModal";
+import SelectEventModal from "./SelectEventModal"
 
 export default class CodeCardComponent extends Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			selectedEvent: 'ongoing',
 			filterKeyword: '',
 			codeModificationModal: false,
 			newCodeModal: false,
-			qrScanner: false
+			qrScanner: false,
+			selectEventModal: false
 		}
 	}
 
 	codesTypeTobeShown = () => {
-		if (this.state.selectedEvent === 'ongoing') return this.filterCode(this.props.firebaseOngoingCodes, this.state.filterKeyword)
-		else if (this.state.selectedEvent === 'offgoing') return this.filterCode(this.props.firebaseOffgoingCodes, this.state.filterKeyword)
+		if (this.props.codes[this.props.selectedEvent]) return this.filterCode(this.props.codes[this.props.selectedEvent]['codes'], this.state.filterKeyword)
 		else return {}
 	}
 
-	totalCodesCount = () => (!this.props.firebaseOffgoingCodes || !this.props.firebaseOngoingCodes) ? 0 : Object.keys(this.props.firebaseOngoingCodes).length + Object.keys(this.props.firebaseOffgoingCodes).length
+	totalCodesCount = () => (!this.props.codes) ? 0 : Object.keys(this.props.codes).length
 
 	changeSelectedEvent = (event) => {
 		this.setState({
@@ -79,7 +79,7 @@ export default class CodeCardComponent extends Component {
 
 	showCodeModificationModal = (code, startDate, endDate, useCount) => {
 		var currentBrandId = this.props.currentBrandId
-		var eventType = this.state.selectedEvent
+		var eventType = this.props.selectedEvent
 		this.setState({
 			codeModificationModal: true,
 			codeModificationDetails: {
@@ -132,6 +132,18 @@ export default class CodeCardComponent extends Component {
 		})
 	}
 
+	openSelectEventModal = () => {
+		this.setState({
+			selectEventModal: true
+		})
+	}
+
+	closeSelectEventModal = () => {
+		this.setState({
+			selectEventModal: false
+		})
+	}
+
 	render() {
 		return (
 			<Segment raised style={{
@@ -146,6 +158,11 @@ export default class CodeCardComponent extends Component {
 				</h2>
 				<div style={{flex: '1', paddingLeft: '20px', paddingRight: '20px', display: 'flex', flexDirection: 'column'}}>
 					<div style={{display: 'flex', width: "100%", flex: 'none'}}>
+						<Button
+							color="teal"
+							onClick={this.openSelectEventModal}
+							style={{marginRight: '5px'}}
+						>Change event</Button>
 						<Button onClick={this.openQR} size='medium'>
 							<div style={{display: 'table'}}>
 								<img src={qrScanIcon} alt='qr scan icon' width='25' height='25' style={{marginRight: '5px'}}/>
@@ -161,7 +178,6 @@ export default class CodeCardComponent extends Component {
 							style={{flex: '1', marginLeft: '5px', marginRight: '5px'}}
 						/>
 						<Button
-
 							color='teal'
 							onClick={this.onNewCodeButtonCLick}
 							style={{marginLeft: '5px'}}>Add a new code
@@ -187,11 +203,11 @@ export default class CodeCardComponent extends Component {
 									Object.keys(this.codesTypeTobeShown()).map((code) => {
 										return (
 											<Table.Row>
-												<Table.Cell textAlign='center' verticalAlign='middle' style={{width: '40%'}}>{code}</Table.Cell>
-												<Table.Cell textAlign='center' verticalAlign='middle' style={{width: '15%'}}>{this.codesTypeTobeShown()[code].start_date != "" ? this.codesTypeTobeShown()[code].start_date : "N/A"}</Table.Cell>
-												<Table.Cell textAlign='center' verticalAlign='middle' style={{width: '15%'}}>{this.codesTypeTobeShown()[code].end_date != "" ? this.codesTypeTobeShown()[code].end_date : "N/A"}</Table.Cell>
-												<Table.Cell textAlign='center' verticalAlign='middle' style={{width: '15%'}}>{this.codesTypeTobeShown()[code].use_count}</Table.Cell>
-												<Table.Cell textAlign='center' verticalAlign='middle' style={{width: '15%'}}>
+												<Table.Cell textAlign='center' verticalAlign='middle' style={{width: '40%', paddingTop: '5px', paddingBottom: '5px'}}>{code}</Table.Cell>
+												<Table.Cell textAlign='center' verticalAlign='middle' style={{width: '15%', paddingTop: '5px', paddingBottom: '5px'}}>{this.codesTypeTobeShown()[code].start_date != "" ? this.codesTypeTobeShown()[code].start_date : "N/A"}</Table.Cell>
+												<Table.Cell textAlign='center' verticalAlign='middle' style={{width: '15%', paddingTop: '5px', paddingBottom: '5px'}}>{this.codesTypeTobeShown()[code].end_date != "" ? this.codesTypeTobeShown()[code].end_date : "N/A"}</Table.Cell>
+												<Table.Cell textAlign='center' verticalAlign='middle' style={{width: '15%', paddingTop: '5px', paddingBottom: '5px'}}>{this.codesTypeTobeShown()[code].use_count}</Table.Cell>
+												<Table.Cell textAlign='center' verticalAlign='middle' style={{width: '15%', paddingTop: '5px', paddingBottom: '5px'}}>
 													<Button size='small' onClick={() => {
 														this.showCodeModificationModal(code,
 															this.codesTypeTobeShown()[code].start_date,
@@ -234,9 +250,13 @@ export default class CodeCardComponent extends Component {
 					isOpen={this.state.newCodeModal}
 					close={this.closeNewCodeModal}
 					currentBrandId={this.props.currentBrandId}
-					eventType={this.state.selectedEvent}
+					eventType={this.props.selectedEvent}
 				/>
 
+				<SelectEventModal
+					open={this.state.selectEventModal}
+					onClose={this.closeSelectEventModal}
+				/>
 			</Segment>
 		)
 	}

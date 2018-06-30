@@ -5,10 +5,10 @@ import firebase from 'firebase'
 import {connect} from "react-redux";
 import {bindActionCreators} from "redux";
 import * as actionCreators from "../actions/actionCreators";
-var bcrypt = require('bcryptjs');
 import { withRouter } from 'react-router-dom'
 import logger from '../Utils/logger'
 import { Segment, Modal, Button } from 'semantic-ui-react'
+var bcrypt = require('bcryptjs');
 
 class Home extends React.Component {
     state = {
@@ -17,23 +17,10 @@ class Home extends React.Component {
     };
 
     handleLogin = (username, password) => {
-        if (!this.validateEmail(username)) {
-            const currentUserObject = this.validateFirebaseUser(username, password);
-            if (currentUserObject != false) {
-	            this.props.login(result.email, user.uid, null, null);
-                this.props.history.push('/dashboard');
-            } else {
-                this.setState({
-                    errorMessage: "Invalid username/password.",
-                    errorPopup: true
-                })
-            }
-        } else {
             firebase.auth().signInWithEmailAndPassword(username, password).then(result => {
                 console.log("Firebase login result:")
                 console.log(result)
-                var user = firebase.auth().currentUser
-                this.props.login(result.email, user.uid, null, null);
+                this.props.login(result.email, result.uid, null, null);
                 this.props.history.push('/dashboard');
             }, error => {
                 var errorMessage = error.message;
@@ -43,7 +30,6 @@ class Home extends React.Component {
                     errorMessage: errorMessage
                 });
             });
-        }
     }
 
     closeErrorPopup = () => {
@@ -92,8 +78,10 @@ class Home extends React.Component {
     }
 
     componentDidMount() {
-        if (this.props.isLoggedIn) {
-	        //this.props.history.push('/dashboard');
+        let currentUser= firebase.auth().currentUser
+        if (currentUser !== null) {
+	        this.props.login(currentUser.email, currentUser.uid, null, null);
+	        this.props.history.push('/dashboard');
         }
     }
 }

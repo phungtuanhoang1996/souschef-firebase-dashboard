@@ -1,12 +1,21 @@
 import React from 'react';
 import { Segment, Divider, Button } from 'semantic-ui-react'
 import brandIcon from '../../resources/icons/brand-icon.png'
+import eventIcon from '../../resources/icons/event-icon.png'
 import SideBarButton from './SideBarButton'
 import buttonIcon from '../../resources/icons/button-icon.png'
 import firebase from 'firebase'
 import logger from "../../Utils/logger";
+import SelectEventModal from "../../containers/Overview/components/SelectEventModal";
 
 export default class DrawerNavComponent extends React.Component {
+	constructor(props) {
+		super()
+		this.state = {
+			selectEventModal: false
+		}
+	}
+
     render () {
 	    return(
 	    	<Segment
@@ -23,12 +32,29 @@ export default class DrawerNavComponent extends React.Component {
 			    <Divider fitted/>
 
 			    <div align="center" style={{backgroundColor: '#354455', paddingTop: '10px', paddingBottom: '5px', margin: '0px'}}>
-				    <div style={{display: 'inline-table'}}>
-				        <img src={brandIcon} alt='brand icon' width='25' height='25' style={{marginRight: '5px'}}/>
+				    <span style={{display: 'inline-flex', alignItems: 'center'}}>
+					    <img src={brandIcon} alt='brand icon' width='25' height='25' style={{marginRight: '5px'}}/>
 					    <div style={{display: 'table-cell', verticalAlign: 'middle', color: 'white'}}>Your brand</div>
-				    </div>
+				    </span>
 			    </div>
 			    <h5 align="center" style={{backgroundColor: '#354455', color: 'white', paddingBottom: '10px', paddingTop: '5px', margin: '0px'}}>{this.props.currentBrandName ? this.props.currentBrandName : "Loading..."}</h5>
+
+			    <Divider fitted/>
+
+			    <div align="center" style={{backgroundColor: '#354455', paddingTop: '10px', paddingBottom: '5px', margin: '0px'}}
+			        onClick={this.openSelectEventModal}
+			    >
+				    <span style={{display: 'inline-flex', alignItems: 'center'}}>
+					    <img src={eventIcon} alt='event icon' width='25' height='25' style={{marginRight: '5px'}}/>
+					    <div style={{display: 'table-cell', verticalAlign: 'middle', color: 'white'}}>Current event</div>
+				    </span>
+			    </div>
+
+				<h5 align="center" style={{backgroundColor: '#354455', paddingBottom: '10px', color: 'white', margin: '0px'}}
+				    onClick={this.openSelectEventModal}
+				>
+					{this.props.currentEvent ? this.props.currentEvent : "Loading..."}
+				</h5>
 
 			    <Divider fitted />
 
@@ -71,9 +97,27 @@ export default class DrawerNavComponent extends React.Component {
 						}}
 					>Logout</Button>
 			    </div>
+
+			    <SelectEventModal
+			        open={this.state.selectEventModal}
+			        onClose={this.closeSelectEventModal}
+			    />
 		    </Segment>
 	    )
     }
+
+    closeSelectEventModal = () => {
+    	this.setState({
+		    selectEventModal: false
+	    })
+    }
+
+	openSelectEventModal = () => {
+		this.setState({
+			selectEventModal: true
+		})
+	}
+
 
 	onItemSelect = (item) => {
 		this.props.onItemSelect(item)

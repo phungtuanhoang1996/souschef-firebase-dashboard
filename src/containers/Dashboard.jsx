@@ -35,8 +35,10 @@ class Dashboard extends React.Component {
                     <DrawerNavComponent
                         currentUser={this.props.currentUser}
                         currentBrandName={this.props.currentBrandName}
+                        currentEvent={this.props.currentEvent}
                         onItemSelect={this.onItemSelect}
                         selectedItem={this.state.selectedItem}
+                        events={Object.keys(this.props.codes)}
                         logout={this.props.logout}
                     />
 
@@ -70,7 +72,9 @@ function mapStateToProps (state) {
 		currentUser: state.currentUser,
 		currentUserUid: state.currentUserUid,
 		currentBrandName: state.currentBrandName,
-		currentBrandId: state.currentBrandId
+		currentBrandId: state.currentBrandId,
+		currentEvent: state.currentEvent,
+        codes: state.codes
 	}
 }
 

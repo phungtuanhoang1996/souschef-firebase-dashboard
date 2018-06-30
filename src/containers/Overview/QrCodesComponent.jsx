@@ -14,7 +14,9 @@ const mapStateToProps = (state) => {
 		currentBrandId: state.currentBrandId,
 		ongoingCodes: state.ongoingCodes,
 		offgoingCodes: state.offgoingCodes,
-		machinesData: state.machinesData
+		machinesData: state.machinesData,
+		selectedEvent: state.currentEvent,
+		codes: state.codes
 	}
 }
 
@@ -97,6 +99,8 @@ class QrCodesComponent extends React.Component {
 						firebaseOngoingCodes={this.props.ongoingCodes}
 						firebaseOffgoingCodes={this.props.offgoingCodes}
 						currentBrandId={this.props.currentBrandId}
+						codes={this.props.codes}
+						selectedEvent={this.props.selectedEvent}
 					/>
 				</div>
 

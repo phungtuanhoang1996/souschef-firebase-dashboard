@@ -24,11 +24,17 @@ export default class LoginComponent extends React.Component {
             <div>
                 <h2 align='center'>Souschef Dashboard</h2>
                 <div style={{paddingTop: '5px', paddingBottom: '5px'}}>
-                    <Input onChange={this.emailHandler} style={{width: '100%'}} placeholder={'Username...'}>
+                    <Input onChange={this.emailHandler} style={{width: '100%'}} placeholder={'Username...'}
+                           onKeyDown={(event) => {if (event.keyCode === 13) this.handleClick()}}
+                           tabIndex="0"
+                    >
                     </Input>
                 </div>
 	            <div style={{paddingTop: '5px', paddingBottom: '5px'}}>
-                    <Input type='password' onChange={this.passwordHandler} style={{width: '100%'}} placeholder={'Password...'}>
+                    <Input type='password' onChange={this.passwordHandler} style={{width: '100%'}} placeholder={'Password...'}
+                           onKeyDown={(event) => {if (event.keyCode === 13) this.handleClick()}}
+                           tabIndex="0"
+                    >
                     </Input>
                 </div>
                 <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', paddingTop: '5px', paddingBottom: '5px'}}>

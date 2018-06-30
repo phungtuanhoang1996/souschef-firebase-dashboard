@@ -12,7 +12,9 @@ const mapStateToProps = (state) => {
 		currentBrandId: state.currentBrandId,
 		ongoingCodes: state.ongoingCodes,
 		offgoingCodes: state.offgoingCodes,
-		machinesData: state.machinesData
+		machinesData: state.machinesData,
+		selectedEvent: state.currentEvent,
+		codes: state.codes
 	}
 }
 
@@ -42,7 +44,7 @@ class OverviewComponent extends React.Component {
 			}
 		})
 
-		logger(option + 'sorted machines', sortedMachines)
+		//logger(option + 'sorted machines', sortedMachines)
 		return sortedMachines
 	}
 
@@ -92,6 +94,8 @@ class OverviewComponent extends React.Component {
 						firebaseOngoingCodes={this.props.ongoingCodes}
 						firebaseOffgoingCodes={this.props.offgoingCodes}
 						currentBrandId={this.props.currentBrandId}
+						codes={this.props.codes}
+						selectedEvent={this.props.selectedEvent}
 					/>
 				</div>
 			</div>

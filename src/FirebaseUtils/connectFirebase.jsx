@@ -29,26 +29,16 @@ const connectFirebase = (WrappedComponent) => {
 						var firebaseBrandName = firebase.database().ref('/brands/' + brandId + '/name')
 						this.addListener(firebaseBrandName)
 						firebaseBrandName.on('value', snapshot => {
-							logger("Brand name from firebase: ", snapshot)
+							logger(snapshot.val(), "Brand name from firebase: ")
 							this.props.setCurrentBrandName(snapshot.val())
-						})
-
-						var firebaseOngoingCodesRef = firebase.database().ref('/brands/' + brandId + '/events/ongoing/codes/')
-						var firebaseOffgoingCodesRef = firebase.database().ref('/brands/' + brandId + '/events/offgoing/codes/')
-						this.addListener(firebaseOngoingCodesRef)
-						this.addListener(firebaseOffgoingCodesRef)
-
-						firebaseOngoingCodesRef.on('value', snapshot => {
-							this.props.setOngoingCodes(snapshot.val())
-						})
-						firebaseOffgoingCodesRef.on('value', snapshot => {
-							this.props.setOffgoingCodes(snapshot.val())
 						})
 
 						var firebaseCodesRef = firebase.database().ref('/brands/' + brandId + '/events/');
 						this.addListener(firebaseCodesRef)
 						firebaseCodesRef.on('value', snapshot => {
 							this.props.setCodes(snapshot.val())
+
+							if (snapshot.val()) this.props.setCurrentEvent(Object.keys(snapshot.val())[0])
 						})
 
 						var firebaseAccessibleMachines = firebase.database().ref('/brands/' + brandId + '/machines')
