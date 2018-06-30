@@ -6,6 +6,7 @@ import QrReader from 'react-qr-reader'
 import CodeModificationModal from "./CodeModificationModal";
 import NewCodeModal from "./NewCodeModal";
 import SelectEventModal from "./SelectEventModal"
+import firebase from 'firebase'
 
 export default class CodeCardComponent extends Component {
 	constructor(props) {
@@ -24,7 +25,7 @@ export default class CodeCardComponent extends Component {
 		else return {}
 	}
 
-	totalCodesCount = () => (!this.props.codes || !this.props.selectedEvent) ? 0 : Object.keys(this.props.codes[this.props.selectedEvent]['codes']).length
+	totalCodesCount = () => (!this.props.codes[this.props.selectedEvent]) ? 0 : Object.keys(this.props.codes[this.props.selectedEvent]['codes']).length
 
 	changeSelectedEvent = (event) => {
 		this.setState({
@@ -144,6 +145,10 @@ export default class CodeCardComponent extends Component {
 		})
 	}
 
+	deleteCode = (code) => {
+		firebase.database().ref('brands/' + this.props.currentBrandId + '/events/' + this.props.selectedEvent + '/codes/' + code).remove()
+	}
+
 	render() {
 		return (
 			<Segment raised style={{
@@ -200,11 +205,11 @@ export default class CodeCardComponent extends Component {
 					<div style={{marginTop: '5px', marginBottom: '0px', flex: 'none', overflowY: 'scroll'}}>
 						<Table celled striped>
 							<Table.Header style={{flex: 'none'}}>
-								<Table.HeaderCell textAlign='center' style={{width: '40%', backgroundColor: '#C2D4EA'}}>Code</Table.HeaderCell>
-								<Table.HeaderCell textAlign='center' style={{width: '15%', backgroundColor: '#C2D4EA'}}>Uses Left</Table.HeaderCell>
+								<Table.HeaderCell textAlign='center' style={{width: '35%', backgroundColor: '#C2D4EA'}}>Code</Table.HeaderCell>
 								<Table.HeaderCell textAlign='center' style={{width: '15%', backgroundColor: '#C2D4EA'}}>Start Date</Table.HeaderCell>
 								<Table.HeaderCell textAlign='center' style={{width: '15%', backgroundColor: '#C2D4EA'}}>End Date</Table.HeaderCell>
-								<Table.HeaderCell textAlign='center' style={{width: '15%', backgroundColor: '#C2D4EA'   }}>Action</Table.HeaderCell>
+								<Table.HeaderCell textAlign='center' style={{width: '15%', backgroundColor: '#C2D4EA'}}>Uses Left</Table.HeaderCell>
+								<Table.HeaderCell textAlign='center' style={{width: '20%', backgroundColor: '#C2D4EA'   }}>Action</Table.HeaderCell>
 							</Table.Header>
 						</Table>
 					</div>
@@ -216,21 +221,27 @@ export default class CodeCardComponent extends Component {
 									Object.keys(this.codesTypeTobeShown()).map((code) => {
 										return (
 											<Table.Row>
-												<Table.Cell textAlign='center' verticalAlign='middle' style={{width: '40%', paddingTop: '5px', paddingBottom: '5px'}}>{code}</Table.Cell>
+												<Table.Cell textAlign='center' verticalAlign='middle' style={{width: '35%', paddingTop: '5px', paddingBottom: '5px'}}>{code}</Table.Cell>
 												<Table.Cell textAlign='center' verticalAlign='middle' style={{width: '15%', paddingTop: '5px', paddingBottom: '5px'}}>{this.codesTypeTobeShown()[code].start_date != "" ? this.codesTypeTobeShown()[code].start_date : "N/A"}</Table.Cell>
 												<Table.Cell textAlign='center' verticalAlign='middle' style={{width: '15%', paddingTop: '5px', paddingBottom: '5px'}}>{this.codesTypeTobeShown()[code].end_date != "" ? this.codesTypeTobeShown()[code].end_date : "N/A"}</Table.Cell>
 												<Table.Cell textAlign='center' verticalAlign='middle' style={{width: '15%', paddingTop: '5px', paddingBottom: '5px'}}>{this.codesTypeTobeShown()[code].use_count}</Table.Cell>
-												<Table.Cell textAlign='center' verticalAlign='middle' style={{width: '15%', paddingTop: '5px', paddingBottom: '5px'}}>
+												<Table.Cell textAlign='center' verticalAlign='middle' style={{width: '20%', paddingTop: '5px', paddingBottom: '5px'}}>
 													<Button size='small' onClick={() => {
-														this.showCodeModificationModal(code,
-															this.codesTypeTobeShown()[code].start_date,
-															this.codesTypeTobeShown()[code].end_date,
-															this.codesTypeTobeShown()[code].use_count
-														)
+															this.showCodeModificationModal(code,
+																this.codesTypeTobeShown()[code].start_date,
+																this.codesTypeTobeShown()[code].end_date,
+																this.codesTypeTobeShown()[code].use_count
+															)
+														}
 													}
-													}
+													        style={{marginRight: '10px'}}
 													>
 														Modify
+													</Button>
+													<Button size='small' onClick={() => {this.deleteCode(code)}} color={'red'}
+
+													>
+														Delete
 													</Button>
 												</Table.Cell>
 											</Table.Row>

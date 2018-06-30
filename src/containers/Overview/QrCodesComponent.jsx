@@ -96,8 +96,6 @@ class QrCodesComponent extends React.Component {
 					paddingBottom: '5px'
 				}}>
 					<CodeCardComponent
-						firebaseOngoingCodes={this.props.ongoingCodes}
-						firebaseOffgoingCodes={this.props.offgoingCodes}
 						currentBrandId={this.props.currentBrandId}
 						codes={this.props.codes}
 						selectedEvent={this.props.selectedEvent}

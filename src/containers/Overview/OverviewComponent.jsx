@@ -91,8 +91,6 @@ class OverviewComponent extends React.Component {
 					padding: '10px',
 					paddingTop: '5px'}}>
 					<CodeCardComponent
-						firebaseOngoingCodes={this.props.ongoingCodes}
-						firebaseOffgoingCodes={this.props.offgoingCodes}
 						currentBrandId={this.props.currentBrandId}
 						codes={this.props.codes}
 						selectedEvent={this.props.selectedEvent}
