@@ -4,8 +4,10 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build-semantic": "cd src/semantic && gulp build-css build-assets",
+    "watch-semantic": "cd src/semantic && yarn run build-semantic && gulp watch",
+    "start": "yarn run build-semantic && react-scripts start",
+    "build": "yarn run build-semantic && react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
@@ -37,11 +39,13 @@
     "react-scripts": "^1.1.4",
     "reactstrap": "^5.0.0-beta.2",
     "redux": "^3.7.2",
-    "semantic-ui-css": "^2.3.1",
     "semantic-ui-react": "^0.81.1",
     "style-loader": "^0.20.3",
     "styled-components": "^3.2.3",
     "url-loader": "^1.0.1",
     "xlsx": "^0.13.0"
+  },
+  "devDependencies": {
+    "semantic-ui": "^2.3.2"
   }
 }

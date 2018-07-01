@@ -25,3 +25,4 @@ chrome-user-data
 .firebaserc
 database.rules.json
 firebase.json
+src/semantic/dist

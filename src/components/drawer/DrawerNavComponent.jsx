@@ -79,6 +79,13 @@ export default class DrawerNavComponent extends React.Component {
 				    selected={this.props.selectedItem === 'codes'}
 				    onItemSelect={this.onItemSelect}
 			    />
+			    <SideBarButton
+				    item='events'
+				    buttonText="Events"
+				    icon={buttonIcon}
+				    selected={this.props.selectedItem === 'events'}
+				    onItemSelect={this.onItemSelect}
+			    />
 			    <div style={{
 			    	display: 'flex',
 			    	backgroundColor: '#354455',

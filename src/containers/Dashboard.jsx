@@ -20,6 +20,7 @@ class Dashboard extends React.Component {
             case 'overview': return (<OverviewComponent/>)
             case 'machines': return null
             case 'codes': return (<QrCodesComponent/>)
+	        case 'events': return null
         }
     }
 
