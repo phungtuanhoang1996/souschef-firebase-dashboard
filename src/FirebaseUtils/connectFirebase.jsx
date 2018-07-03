@@ -38,7 +38,7 @@ const connectFirebase = (WrappedComponent) => {
 						firebaseCodesRef.on('value', snapshot => {
 							this.props.setCodes(snapshot.val())
 
-							if (!this.props.currentEvent) this.props.setCurrentEvent(Object.keys(snapshot.val())[0])
+							if (!this.props.currentEvent || !snapshot.val()[this.props.currentEvent]) this.props.setCurrentEvent(Object.keys(snapshot.val())[0])
 						})
 
 						var firebaseAccessibleMachines = firebase.database().ref('/brands/' + brandId + '/machines')

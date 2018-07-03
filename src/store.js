@@ -8,6 +8,8 @@ const defaultState = {
     currentUserUid: null,
     currentBrandName: null,
     currentBrandId: null,
+    currentEvent: null,
+    currentDashboardPage: 'overview',
     codes: {},
     machinesData: {}
 }

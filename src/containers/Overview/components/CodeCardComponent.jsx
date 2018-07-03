@@ -21,11 +21,11 @@ export default class CodeCardComponent extends Component {
 	}
 
 	codesTypeTobeShown = () => {
-		if (this.props.codes[this.props.selectedEvent]) return this.filterCode(this.props.codes[this.props.selectedEvent]['codes'], this.state.filterKeyword)
+		if (this.props.codes &&     this.props.codes[this.props.selectedEvent] && this.props.codes[this.props.selectedEvent]['codes']) return this.filterCode(this.props.codes[this.props.selectedEvent]['codes'], this.state.filterKeyword)
 		else return {}
 	}
 
-	totalCodesCount = () => (!this.props.codes[this.props.selectedEvent]) ? 0 : Object.keys(this.props.codes[this.props.selectedEvent]['codes']).length
+	totalCodesCount = () => (!this.props.codes[this.props.selectedEvent]['codes']) ? 0 : Object.keys(this.props.codes[this.props.selectedEvent]['codes']).length
 
 	changeSelectedEvent = (event) => {
 		this.setState({

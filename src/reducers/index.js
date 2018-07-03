@@ -6,6 +6,8 @@ const defaultState = {
 	currentUser: null,
 	currentUserUid: null,
 	currentBrandId: null,
+	currentEvent: null,
+	currentDashboardPage: 'overview',
 	codes: {},
 	machinesData: {}
 }
@@ -111,6 +113,14 @@ const rootReducer = (state, action) => {
 			return {
 				...state,
 				currentEvent: action.currentEvent
+			}
+		}
+
+		case 'SET_CURRENT_DASHBOARD_PAGE': {
+
+			return {
+				...state,
+				currentDashboardPage: action.currentDashboardPage
 			}
 		}
 

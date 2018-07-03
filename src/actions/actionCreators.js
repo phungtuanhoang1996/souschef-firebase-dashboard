@@ -80,3 +80,10 @@ export const setCurrentEvent = (event) => {
 		currentEvent: event
 	}
 }
+
+export const setCurrentDashboardPage = (page) => {
+	return {
+		type: 'SET_CURRENT_DASHBOARD_PAGE',
+		currentDashboardPage: page
+	}
+}
