@@ -1,11 +1,14 @@
 import React from 'react'
-import {Modal, Input, Button, Segment, Divider, Step, Icon} from 'semantic-ui-react'
+import {Modal, Input, Button, Segment, Divider, Step, Icon, List} from 'semantic-ui-react'
 import firebase from 'firebase'
 import Dropzone from 'react-dropzone'
 import logger from "../../../Utils/logger";
 import Papa from "papaparse";
 import moment from "moment/moment";
 import XLSX from 'xlsx'
+import fileUploadIcon from '../../../resources/icons/file-upload.svg'
+import xlsxIcon from '../../../resources/icons/xls-icon.svg'
+import csvIcon from '../../../resources/icons/csv-icon.svg'
 
 class NewEventModal extends React.Component {
 	constructor(props) {
@@ -14,6 +17,7 @@ class NewEventModal extends React.Component {
 			step: 'event name',
 			eventName: '',
 			uploadedFile: null,
+			uploadedFileType: null,
 			isDropzoneEnabled: true,
 			parsingResult: null,
 			eventData: null,
@@ -40,62 +44,107 @@ class NewEventModal extends React.Component {
 		switch (step) {
 			case 'event name': {
 				return (
-					<div>
-						<h3>Enter the name of the event</h3>
-						<Input
-							value={this.state.eventName}
-							onChange={this.onEventNameInputChange}
-							error={this.state.eventNameError === 'Event name must be non-empty strings and can\'t contain ".", "#", "$", "[", or "]"' }
-						/>
-						{
-							this.state.eventNameError === 'Event name must be non-empty strings and can\'t contain ".", "#", "$", "[", or "]"'
-							?
-								(
-									<div style={{color: '#CE201E', marginTop: '10px'}}>{this.state.eventNameError}</div>
-								)
-							:
-								(
-									<div style={{color: '#CE201E', marginTop: '10px'}}>
-										<br/>
-									</div>
-								)
-						}
+					<div style={{display: 'table', height: '100%', width: '100%'}}>
+						<div align="center" style={{display: 'table-cell', verticalAlign: 'middle'}}>
+							<h3>Enter the name of the event</h3>
+							<Input
+								value={this.state.eventName}
+								onChange={this.onEventNameInputChange}
+								error={this.state.eventNameError === 'Event name must be non-empty strings and can\'t contain ".", "#", "$", "[", or "]"' }
+								onKeyDown={(event) => {if (event.keyCode === 13 && !this.state.eventNameError) this.setState({step: 'upload codes'})}}
+							/>
+							{
+								this.state.eventNameError === 'Event name must be non-empty strings and can\'t contain ".", "#", "$", "[", or "]"'
+								?
+									(
+										<div style={{color: '#CE201E', marginTop: '10px'}}>{this.state.eventNameError}</div>
+									)
+								:
+									(
+										<div style={{color: '#CE201E', marginTop: '10px'}}>
+											<br/>
+										</div>
+									)
+							}
+						</div>
 					</div>
 				)
 			}
 			case 'upload codes': {
 				return (
-					<div>
-						<h3>Import code from a .XLSX / .CSV file for the event</h3>
-						<span style={{display: 'inline-flex'}}>
-							<div>
-								<Dropzone onDrop={this.onFileDrop} disabled={!this.state.isDropzoneEnabled}>
-								</Dropzone>
-							</div>
-							<div>
+					<div style={{display: 'table', height: '100%', width: '100%'}}>
+						<div align='center' style={{display: 'table-cell', verticalAlign: 'middle'}}>
+							<h3>Import code from a .XLSX / .CSV file for the event</h3>
+							<span style={{display: 'inline-flex', alignItems: 'center'}}>
+								<div>
+									<Dropzone onDrop={this.onFileDrop} disabled={!this.state.isDropzoneEnabled}
+										style={{height: '200px', width: '300px', borderStyle: 'dashed', borderColor: '#CADBE0'}}
+									>
+										<div style={{width: '100%', height: '100%', display: 'flex', flexDirection: 'column' ,alignItems: 'center', justifyContent: 'center'}}>
+											<img src={fileUploadIcon} style={{width: '75px'}}/>
+											<br/>
+											<div><b>Choose a file </b>or drag it here</div>
+										</div>
+									</Dropzone>
+								</div>
+
+								{
+									this.state.uploadedFileType ? (
+										<Icon name={'arrow right'} color={'#CADBE0'} size={'big'}/>
+									) : null
+								}
+
 								{
 									this.state.uploadedFile ? (
-										<div>
-											<br/>Uploaded file: {this.state.uploadedFile.name}
+										<div style={{height: '200px', width: '300px', border: 'solid', borderColor: '#CADBE0', padding: '10px'}}>
+											<div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+												{this.state.uploadedFileType === 'excel' ? <img src={xlsxIcon} style={{height: '100px', marginRight: '10px'}}/> : null}
+												{this.state.uploadedFileType === 'csv' ? <img src={csvIcon} style={{height: '100px', marginRight: '10px'}}/> : null}
+												<p style={{textAlign: 'left'}}>Uploaded file: <b>{this.state.uploadedFile.name}</b></p>
+											</div>
+											<br/>
+											{
+												this.state.parsingResult ? (
+													<div>{this.state.parsingResult}</div>
+												) : (
+													<div>Parsing file...</div>
+												)
+											}
 										</div>
-									) : (
-										<div>
-											<br/>Uploaded file: None
-										</div>
-									)
+									) : null
 								}
-
-							<br/>
 
 								{
-									this.state.parsingResult ? (
-										<div>{this.state.parsingResult}</div>
-									) : (
-										<div><br/></div>
-									)
+									this.state.uploadedFileType === 'unsupported' ? (
+										<div style={{height: '200px', width: '300px', border: 'solid', borderColor: '#CADBE0', padding: '10px'}}>
+											<div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column',
+														height: '100%'}}
+											>
+												<Icon name={'warning circle'} color={'red'} size={'huge'}/>
+												<br/>
+												<p>The uploaded file type is not supported</p>
+											</div>
+										</div>
+									) : null
 								}
-							</div>
-						</span>
+							</span>
+						</div>
+					</div>
+				)
+			}
+			case 'confirmation': {
+				return (
+					<div style={{display: 'table', height: '100%', width: '100%'}}>
+						<div align="center" style={{display: 'table-cell', verticalAlign: 'middle'}}>
+							<h3>Create the following event?</h3>
+							<p><Icon name={'arrow right'} size={'small'} color={'blue'}/>Event name: <b>{this.state.eventName}</b></p>
+							<p><Icon name={'arrow right'} size={'small'} color={'blue'}/>Import codes from file: <b>{this.state.uploadedFile ? this.state.uploadedFile.name : 'None'}</b></p>
+							{
+								this.state.uploadedFile ? (
+									<p><Icon name={'arrow right'} size={'small'} color={'blue'}/>{this.state.parsingResult}</p>
+								) : null
+							}
+						</div>
 					</div>
 				)
 			}
@@ -172,14 +221,14 @@ class NewEventModal extends React.Component {
 				<Modal.Header>Create a new event</Modal.Header>
 				<Step.Group attached='top'>
 					<Step active={this.state.step === 'event name'}>
-						<Icon name='truck' />
+						<Icon name='pencil' />
 						<Step.Content>
 							<Step.Title>Event name</Step.Title>
 						</Step.Content>
 					</Step>
 
 					<Step active={this.state.step === 'upload codes'}>
-						<Icon name='payment' />
+						<Icon name='qrcode' />
 						<Step.Content>
 							<Step.Title>Upload codes (optional)</Step.Title>
 						</Step.Content>
@@ -188,12 +237,12 @@ class NewEventModal extends React.Component {
 					<Step active={this.state.step === 'confirmation'}>
 						<Icon name='info circle' />
 						<Step.Content>
-							<Step.Title>Confirm Order</Step.Title>
+							<Step.Title>Confirm</Step.Title>
 						</Step.Content>
 					</Step>
 				</Step.Group>
 
-				<Modal.Content attached>
+				<Modal.Content attached style={{height: '300px'}}>
 					{this.getModalContent(this.state.step)}
 				</Modal.Content>
 				<Modal.Actions>
@@ -219,12 +268,30 @@ class NewEventModal extends React.Component {
 			})
 			this.parseUploadedFile(acceptedFiles[0])
 		} else {
-
+			this.setState({
+				uploadedFile: null
+			})
 		}
 	}
 
 	isSupportedFileTypes = (fileName) => {
-		return this.isCsv(fileName) || this.isExcelSheet(fileName)
+		if (this.isCsv(fileName)) {
+			this.setState({
+				uploadedFileType: 'csv'
+			})
+			return true
+		}
+		else if (this.isExcelSheet(fileName)) {
+			this.setState({
+				uploadedFileType: 'excel'
+			})
+			return true
+		} else {
+			this.setState({
+				uploadedFileType: 'unsupported'
+			})
+			return false
+		}
 	}
 
 	isCsv = (fileName) => {
