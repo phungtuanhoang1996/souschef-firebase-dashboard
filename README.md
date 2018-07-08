@@ -1,29 +1,14 @@
-# README #
+# Souschef Firebase Dashboard #
 
-This repository stores the web app mainly used to view live data and modify QR codes on the Firebase Realtime DB.
+## A web application for managing drinks QR codesand events, and monitoring machines online status ##
+## Written in React with components from Semantic UI React ##
 
-## Available Scripts
+Hosted at https://souschef-web-app.firebaseapp.com
 
-In the project directory, you can run:
+**This version of the web app is hosted from my own Firebase and the actual Firebase config is hidden**
 
-### `npm start`
+**The Firebase Realtime Database this web app connects to is also a mocked up version from my own Firebase account**
 
-Runs the app in the development mode. 
-Open [http://localhost:8080](http://localhost:8080) to view it in the browser.
+Screenshot
 
-The page will reload if you make edits. 
-You will also see any lint errors in the console.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder. 
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.
-Your app is ready to be deployed!
-
-See the section about [deployment](#deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+![screenshot](https://i.imgur.com/YXDS3fm.png)
